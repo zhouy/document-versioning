@@ -1,0 +1,86 @@
+package models;
+
+public class Version extends play.db.jpa.Model
+{
+    /* Fields */
+    public java.lang.String content;
+    public java.util.Date date;
+    public models.Post post;
+    public java.util.List comments;
+
+    /* Constructors */
+    public Version(models.Post, java.lang.String) {
+    }
+
+    public Version() {
+    }
+
+
+    /* Methods */
+    public java.util.List getAllComments() {
+    }
+
+    public models.Version addComment(models.Comment) {
+    }
+
+    public java.lang.String getTimef() {
+    }
+
+    public java.lang.String getContent() {
+    }
+
+    public void setContent(java.lang.String) {
+    }
+
+    public java.util.Date getDate() {
+    }
+
+    public void setDate(java.util.Date) {
+    }
+
+    public models.Post getPost() {
+    }
+
+    public void setPost(models.Post) {
+    }
+
+    public java.util.List getComments() {
+    }
+
+    public void setComments(java.util.List) {
+    }
+
+    public static long count() {
+    }
+
+    public static long count(java.lang.String, java.lang.Object[]) {
+    }
+
+    public static java.util.List findAll() {
+    }
+
+    public static play.db.jpa.JPABase findById(java.lang.Object) {
+    }
+
+    public static play.db.jpa.GenericModel$JPAQuery find(java.lang.String, java.lang.Object[]) {
+    }
+
+    public static play.db.jpa.GenericModel$JPAQuery find() {
+    }
+
+    public static play.db.jpa.GenericModel$JPAQuery all() {
+    }
+
+    public static int delete(java.lang.String, java.lang.Object[]) {
+    }
+
+    public static int deleteAll() {
+    }
+
+    public static play.db.jpa.JPABase findOneBy(java.lang.String, java.lang.Object[]) {
+    }
+
+    public static play.db.jpa.JPABase create(java.lang.String, play.mvc.Scope$Params) {
+    }
+
+}

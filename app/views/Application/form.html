@@ -1,0 +1,27 @@
+#{extends 'main.html' /}
+#{set title:'Edit Post' /}
+
+<h1>Create a post</h1>
+
+<hr>
+
+<div id="editPost">
+	*{<form action="@{Application.edit()}" method="GET">}*
+	#{form @Application.edit()}
+		<p class="">
+			<input type="hidden" name="id" value="${post.id}"></input>
+		</p>
+		<p class="">
+			<span>Subject:</span>
+			<input type="text" name="subject" value="${post?.subject}"></input>
+		</p>
+		<p class="">
+			<span>Content:</span>
+			<textarea name="content" rows="4" cols="40">${lastVersion?.content}</textarea>
+		</p>
+		<p class="">
+			<input type="submit" value="Edit Post"></input>
+		</p>
+	*{</form>}*
+	#{/form}
+</div>

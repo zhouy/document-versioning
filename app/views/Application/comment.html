@@ -1,0 +1,28 @@
+#{extends 'main.html' /}
+#{set title:'Edit Comment' /}
+
+<h1>Make a Comment</h1>
+
+<hr>
+
+<div id="editComment">
+	<form action="@{Application.postComment()}" method="GET">
+		<p class="">
+			<input type="hidden" name="postId" value="${postId}"/>
+		</p>
+		<p class="">
+			<input type="hidden" name="versionId" value="${versionId}"/>
+		</p>
+		<p class="">
+			<span>Subject:</span>
+			<input type="text" name="subject" value=""/>
+		</p>
+		<p class="">
+			<span>Content:</span>
+			<textarea name="content" rows="4" cols="40"></textarea>
+		</p>
+		<p class="">
+			<input type="submit" value="Post Comment"/>
+		</p>
+	</form>
+</div>

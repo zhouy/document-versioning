@@ -1,0 +1,71 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<h1>All posts</h1>
+
+*{ One simple example of Ajax in play framework }*
+
+*{
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#btnajax').click(function(){
+			/* The data being sent use the format of {param:value, ...}, where 
+			the left of : is the name of argument passed to the backend, and
+			the right of : is the value */
+			$.post('/ajaxtest', {data:"some-data"}, function(data, success) {
+				$('#ajaxresult').html(data);
+			}, 'json');
+		});
+	});
+</script>
+<input id="btnajax" type="button" value="Send"></input>
+<div id="ajaxresult"></div>
+}*
+
+#{list items:posts, as:'post'}
+	<hr/>
+    <h3>
+		[${post.subject}]
+		<a href="@{Application.form(post.id)}">Edit Post</a>
+    </h3>
+	<h3>Versions:</h3>
+	#{list items:post.getAllVersions(), as:'version'}
+		<h4>
+			*{ Display date and content of post }*
+			<span>[${version.getTimef()}] ${version.content}</span>
+			
+			*{ Show operation links }*
+			<a href="@{Application.comment(post.id, version.id)}">Comment</a>
+			<a href="@{Application.deleteVersion(post.id, version.id)}">Delete Version</a>
+		</h4>
+		*{ List all comments from this version }*
+		<ul>
+		#{list items:version.getAllComments(), as:'comment'}
+			<li>
+				<span>[${comment.getTimef()}] [${comment.subject}] ${comment.content}</span>
+				<a href="@{Application.deleteComment(comment.id)}">Delete Comment</a>
+			</li>
+		#{/list}
+		</ul>
+	#{/list}
+#{/list}
+
+<hr/>
+
+<h1>Create a new post</h1>
+
+<div id="createPost">
+	<form action="@{Application.create()}" method="GET">
+		<p class="">
+			<span>Subject:</span>
+			<input type="text" name="subject"></input>
+		</p>
+		<p class="">
+			<span>Content:</span>
+			<textarea name="content" rows="4" cols="40"></textarea>
+		</p>
+		<p class="">
+			<input type="submit" value="Submit Post"></input>
+		</p>
+	</form>
+</div>

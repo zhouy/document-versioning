@@ -1,0 +1,82 @@
+package models;
+
+public class Post extends play.db.jpa.Model
+{
+    /* Fields */
+    public java.lang.String subject;
+    public models.User author;
+    public java.util.List versions;
+
+    /* Constructors */
+    public Post(java.lang.String) {
+    }
+
+    public Post() {
+    }
+
+
+    /* Methods */
+    public models.Post addVersion(models.Version) {
+    }
+
+    public java.util.List getAllVersions() {
+    }
+
+    public models.Version getLastVersion() {
+    }
+
+    public models.Post deleteVersion(java.lang.Long) {
+    }
+
+    public java.lang.String getSubject() {
+    }
+
+    public void setSubject(java.lang.String) {
+    }
+
+    public models.User getAuthor() {
+    }
+
+    public void setAuthor(models.User) {
+    }
+
+    public java.util.List getVersions() {
+    }
+
+    public void setVersions(java.util.List) {
+    }
+
+    public static long count() {
+    }
+
+    public static long count(java.lang.String, java.lang.Object[]) {
+    }
+
+    public static java.util.List findAll() {
+    }
+
+    public static play.db.jpa.JPABase findById(java.lang.Object) {
+    }
+
+    public static play.db.jpa.GenericModel$JPAQuery find(java.lang.String, java.lang.Object[]) {
+    }
+
+    public static play.db.jpa.GenericModel$JPAQuery find() {
+    }
+
+    public static play.db.jpa.GenericModel$JPAQuery all() {
+    }
+
+    public static int delete(java.lang.String, java.lang.Object[]) {
+    }
+
+    public static int deleteAll() {
+    }
+
+    public static play.db.jpa.JPABase findOneBy(java.lang.String, java.lang.Object[]) {
+    }
+
+    public static play.db.jpa.JPABase create(java.lang.String, play.mvc.Scope$Params) {
+    }
+
+}
