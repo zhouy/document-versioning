@@ -15,8 +15,8 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class User extends Model {
-	
+public class User extends Model
+{	
 	@Required
 	public String userEmail;
 	
@@ -28,8 +28,8 @@ public class User extends Model {
 	public List<Post> posts;
 	
 	/* Constructor with minmum requirements */
-	public User(String userEmail_) {
-		
+	public User(String userEmail_)
+	{
 		this.userEmail = userEmail_;
 		this.posts = new ArrayList<Post>();
 	}
@@ -37,8 +37,8 @@ public class User extends Model {
 	/* Constructor with all data members */
 	public User(String userEmail_,
 				String firstName_,
-				String lastName_) {
-		
+				String lastName_)
+	{		
 		this.userEmail = userEmail_;
 		this.firstName = firstName_;
 		this.lastName = lastName_;

@@ -11,6 +11,7 @@ package controllers;
 import play.*;
 import play.mvc.*;
 
-public class Permalinks extends CRUD {
+public class Permalinks extends CRUD
+{
 	
 }

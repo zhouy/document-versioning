@@ -19,8 +19,8 @@ import java.util.*;
  * versions
  */
 @Entity
-public class Post extends Model {
-	
+public class Post extends Model
+{	
 	@Required
 	public String subject;
 	
@@ -31,54 +31,61 @@ public class Post extends Model {
 	@OneToMany(mappedBy="post", cascade=CascadeType.ALL)
 	public List<Version> versions;
 	
+	public Post()
+	{
+	}
+	
 	/* Constructor with minmum requirements */
-	public Post(String subject_) {
-		
+	public Post(String subject_)
+	{
 		this.subject = subject_;
 		this.versions = new ArrayList<Version>();
 	}
 	
 	/* Add a version to existing post */
-	public Post addVersion(Version aversion_) {
-		
+	public Post addVersion(Version aversion_)
+	{
 		this.versions.add(aversion_);
 		return this;
 	}
 	
 	/* Retrieve all versions */
-	public List<Version> getAllVersions() {
-		
+	public List<Version> getAllVersions()
+	{
 		return this.versions;
 	}
 	
 	/* */
-	public Version getLastVersion() {
-		
+	public Version getLastVersion()
+	{
 		Version lastVersion = null;
-		if (versions.size()>0) {
+		if (versions.size()>0)
+		{
 			lastVersion = this.versions.get(versions.size()-1);
 		}
 		return lastVersion;
 	}
 	
 	/* */
-	public Post deleteVersion(Long id) {
-		
+	public Post deleteVersion(Long id)
+	{
 		// How to delete an entity with dependecy?
 		// If post contains only one version, then remove the post as well?
 		Version retvar = null;
-		for(Version aversion : versions) {
-			if (aversion.id==id) {
+		for(Version aversion : versions)
+		{
+			if (aversion.id==id)
+			{
 				retvar = aversion;
 				versions.remove(aversion);
 				break;
 			}
 		}
-		if (retvar!=null) {
+		if (retvar!=null)
+		{
 			retvar.delete();
 		}
 		this.save();
 		return this;
 	}
-	
 }

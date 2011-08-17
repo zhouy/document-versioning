@@ -5,8 +5,14 @@
 # Home page
 GET     /                                       Application.index
 
-# One simple example of Ajax route
-#POST	/ajaxtest								Application.ajaxtest
+# Ajax post
+GET		/ajaxListPosts							Application.ajaxListPosts
+GET		/ajaxCreatePost							Application.ajaxCreatePost
+GET		/ajaxGenerateFormEdit					Application.ajaxGenerateFormEdit
+GET		/ajaxPostEdit							Application.ajaxPostEdit
+GET		/ajaxDeleteVersion						Application.ajaxDeleteVersion
+GET		/ajaxComment							Application.ajaxComment
+GET		/ajaxDeleteComment						Application.ajaxDeleteComment
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

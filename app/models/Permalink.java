@@ -15,8 +15,8 @@ import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Permalink extends Model {
-	
+public class Permalink extends Model
+{	
 	@Required
 	public String subject;
 	
@@ -24,15 +24,15 @@ public class Permalink extends Model {
 	public String content;
 	
 	/* Constructor with minmum requirements */
-	public Permalink(String subject_) {
-		
+	public Permalink(String subject_)
+	{
 		this.subject = subject_;
 	}
 	
 	/* Constructor with all data members */
 	public Permalink(String subject_,
-				String content_) {
-		
+				String content_)
+	{
 		this.subject = subject_;
 		this.content = content_;
 	}

@@ -13,3 +13,9 @@ For problematic copy:
 * Uncomment the following line in app/conf/application.conf of:
 	
 		db=mysql:root@document_versioning
+		
+* Problem solved
+		
+	If using MYSQL5.5, please execute following command:
+		
+		alter table comment add constraint fk_comment_version foreign key (version_id) references version(id);

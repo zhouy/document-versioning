@@ -1,71 +1,331 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
-<h1>All posts</h1>
+*{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }*
+*{ Ajax posting code starts here }*
 
-*{ One simple example of Ajax in play framework }*
+<style type="text/css">
 
-*{
+	/* Clickable text */
+	.alink
+	{
+		color: #339977;
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	
+	/* */
+	ul
+	{
+		list-style-type: none;
+		margin-top: 0px;
+		margin-left: 0px;
+	}
+	
+	/* */
+	li
+	{
+		margin-top: 10px;
+	}
+	
+	.versionBody
+	{
+		margin-left: 10px;
+	}
+	
+</style>
+
 <script type="text/javascript">
-	$(document).ready(function() {
-		$('#btnajax').click(function(){
-			/* The data being sent use the format of {param:value, ...}, where 
-			the left of : is the name of argument passed to the backend, and
-			the right of : is the value */
-			$.post('/ajaxtest', {data:"some-data"}, function(data, success) {
-				$('#ajaxresult').html(data);
-			}, 'json');
-		});
-	});
-</script>
-<input id="btnajax" type="button" value="Send"></input>
-<div id="ajaxresult"></div>
-}*
 
-#{list items:posts, as:'post'}
-	<hr/>
-    <h3>
-		[${post.subject}]
-		<a href="@{Application.form(post.id)}">Edit Post</a>
-    </h3>
-	<h3>Versions:</h3>
-	#{list items:post.getAllVersions(), as:'version'}
-		<h4>
-			*{ Display date and content of post }*
-			<span>[${version.getTimef()}] ${version.content}</span>
+	/* Parse posts JSON data */
+	function parsePosts(posts)
+	{
+		var target = $('#postBody');
+		target.html("");
+		
+		// Populate all post in returned JSON data object
+		for (var p in posts)
+		{
+			// Add post title
+			target.append(
+						"<hr/>" +
+						"<h3>" +
+						"(" + posts[p].subject + ") " +
+						"<span class='alink'" +
+						"id='e_p" + p + "' postId='" + posts[p].id +
+						"'>Edit</span>" +
+						"</h3>"
+						);
 			
-			*{ Show operation links }*
-			<a href="@{Application.comment(post.id, version.id)}">Comment</a>
-			<a href="@{Application.deleteVersion(post.id, version.id)}">Delete Version</a>
-		</h4>
-		*{ List all comments from this version }*
-		<ul>
-		#{list items:version.getAllComments(), as:'comment'}
-			<li>
-				<span>[${comment.getTimef()}] [${comment.subject}] ${comment.content}</span>
-				<a href="@{Application.deleteComment(comment.id)}">Delete Comment</a>
-			</li>
-		#{/list}
-		</ul>
-	#{/list}
-#{/list}
+			var versions = posts[p].versions;
+			// Populate all versions of the post
+			for (var v in versions)
+			{
+				// Add version content
+				target.append(
+							"<p>" +
+							"<span>" +
+							"Version " + (parseInt(v) + 1) + " - " +
+							versions[v].date +
+							" </span>" +
+							/* Comment on version */
+							"<span class='alink' id='c_p" + p + "v" + v +
+							"' postId='" + posts[p].id +
+							"' versionId='" + versions[v].id +
+							"'>Comment</span>" +
+							" " +
+							/* Delete version */
+							"<span class='alink' id='d_p" + p + "v" + v +
+							"' postId='" + posts[p].id +
+							"' versionId='" + versions[v].id +
+							"'>Delete</span>" +
+							"</p>" +
+							/* Post version body */
+							"<p class='versionBody'>" +
+							versions[v].content +
+							"</p>"
+							);
+							
+				var comments = versions[v].comments;
+				var ulComment = $("<ul></ul>");
+				// Add comments to the version
+				for (var c in comments)
+				{
+					ulComment.append(
+									"<li>" +
+									"<span>" +
+									comments[c].date + " - " +
+									" (" + comments[c].subject + ") - " +
+									comments[c].content +
+									"</span>" +
+									" " +
+									/* Delete comment */
+									"<span class='alink'" + 
+									"id='d_v" + v + "c" + c + "'" +
+									"versionId='" + versions[v].id + "'" +
+									"commentId='" + comments[c].id + "'>" +
+									"Delete</span>" +
+									"</li>"
+									);
+					target.append(ulComment);
+									
+					// Add delete comment click event handler
+					$('#d_v' + v + 'c' + c).click(function()
+					{
+						$.getJSON('/ajaxDeleteComment',
+								{"versionId":$(this).attr('versionId'),
+								"commentId":$(this).attr('commentId')},
+								listPosts);
+					});
+				}
+				
+				// Add comment click event handler
+				$('#c_p' + p + 'v' + v).click(prepareCommentForm);
+				
+				// Add delete version click event handler
+				$('#d_p' + p + 'v' + v).click(function()
+				{
+					$.getJSON('/ajaxDeleteVersion',
+							{"postId":parseInt($(this).attr('postId')),
+							"versionId":parseInt($(this).attr('versionId'))},
+							listPosts);
+				});
+			}
+			
+			// Add edit post click event handler
+			$('#e_p' + p).click(function()
+			{
+				$.getJSON('/ajaxGenerateFormEdit',
+						{"postId":parseInt($(this).attr('postId'))},
+						prepareEditForm);
+			});
+		}
+	}
+	
+	/* */
+	function listPosts()
+	{
+		$.getJSON('/ajaxListPosts',
+				null,
+				parsePosts);
+	}
+	
+	/* */
+	function prepareEditForm(post)
+	{
+		$('#formEditPost').css('display', "block");
+		$('#postEditId').attr('value', post.id);
+		$('#postEditSubject').attr('value', post.subject);
+		// Set target text with the content of the only version
+		$('#postEditContent').attr('value', post.versions[0]
+											? post.versions[0].content
+											: "");
+		
+		$('#submitEditPost').unbind();
+		$('#submitEditPost').click(function()
+		{
+			var postId = $('#postEditId').attr('value');
+			var content = $('#postEditContent').attr('value');
+			$.getJSON('/ajaxPostEdit',
+					{"postId":postId,
+					"newContent":content},
+					doneEditPost);
+		});
+		
+		$('#cancelEditPost').unbind();
+		$('#cancelEditPost').click(function()
+		{
+			$('#postEditId').attr('value', "");
+			$('#postEditSubject').attr('value', "");
+			$('#postEditContent').attr('value', "");
+			$('#formEditPost').css('display', "none");
+			// Clear submit click event listener
+			$('#submitEditPost').unbind();
+		});
+	}
+	
+	/* */
+	function doneEditPost()
+	{
+		$('#cancelEditPost').click();
+		// Click events stacks, clear click event listener on submit button
+		$('#submitEditPost').unbind();
+		listPosts();
+	}
+	
+	/* */
+	function prepareCommentForm(post)
+	{
+		$('#createComment').css('display', "block");
+		$('#commentVersionId').attr('value', $(this).attr('versionId'));
+		
+		$('#submitComment').unbind();
+		$('#submitComment').click(function()
+		{
+			var versionId = $('#commentVersionId').attr('value');
+			var subject = $('#commentSubject').attr('value');
+			var content = $('#commentContent').attr('value');
+			$.getJSON('/ajaxComment',
+					{"versionId":versionId,
+					"subject":subject,
+					"content":content},
+					doneComment);
+		});
+		
+		$('#clearComment').unbind();
+		$('#clearComment').click(function()
+		{
+			$('#commentVersionId').attr('value', "");
+			$('#commentSubject').attr('value', "");
+			$('#commentContent').attr('value', "");
+		});
+		
+		$('#cancelComment').unbind();
+		$('#cancelComment').click(function()
+		{
+			$('#clearComment').click();
+			$('#createComment').css('display', "none");
+			// Clear submit click event listener
+			$('#submitComment').unbind();
+		});
+	}
+	
+	/* */
+	function doneComment()
+	{
+		$('#cancelComment').click();
+		// Click events stacks, clear click event listener on submit button
+		$('#submitComment').unbind();
+		listPosts();
+	}
+	
+	/* Submit your post data */
+	function createPost()
+	{
+		var postSubject = $('#postSubject').val();
+		var postContent = $('#postContent').val();
+		
+		// Send post data using jQuery Ajax post() method
+		$.getJSON('/ajaxCreatePost',
+				{"subject":postSubject,
+				"content":postContent},
+				parsePosts,
+				'json');
+	}
+	
+	/* Html loaded event handler */
+	$(document).ready(function() {
+		// Populate all posts on the front page
+		listPosts();
+		// Set click event handler on submitPost button
+		$('#submitPost').click(createPost);
+	});
+	
+</script>
 
+<h1>Document versioning with Ajax posting</h1>
 <hr/>
 
-<h1>Create a new post</h1>
+*{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }*
+*{ Edit post form }*
+<div id="formEditPost" style="display:none;">
+	<h3>Edit post:</h3>
+	<p>
+		<input type="hidden" id="postEditId"></input>
+	</p>
+	<p>
+		<span>Subject:</span>
+		<input id="postEditSubject" value=""></input>
+	</p>
+	<p>
+		<span>Content:</span>
+		<textarea id="postEditContent" rows="10" cols="60"></textarea>
+	</p>
+	<p>
+		<input type="submit" id="submitEditPost" value="Submit"></input>
+		<input type="button" id="cancelEditPost" value="Cancel"></input>
+	</p>
+</div>
 
+*{ Create comment form }*
+<div id="createComment"  style="display:none;">
+	<h3>Comment:</h3>
+	<p>
+		<input type="hidden" id="commentVersionId"></input>
+	</p>
+	<p>
+		<span>Subject:</span>
+		<input id="commentSubject" type="text"></input>
+	</p>
+	<p>
+		<span>Content:</span>
+		<textarea id="commentContent" rows="10" cols="60"></textarea>
+	</p>
+	<p>
+		<input id="submitComment" type="button" value="Submit"></input>
+		<input id="clearComment" type="button" value="Clear"></input>
+		<input id="cancelComment" type="button" value="Cancel"></input>
+	</p>
+</div>
+
+*{ All posts }*
+<h2>All posts</h2>
+<div id="postBody"></div>
+
+<hr/>
+<h2>Create a new post</h2>
+
+*{ Create post form }*
 <div id="createPost">
-	<form action="@{Application.create()}" method="GET">
-		<p class="">
-			<span>Subject:</span>
-			<input type="text" name="subject"></input>
-		</p>
-		<p class="">
-			<span>Content:</span>
-			<textarea name="content" rows="4" cols="40"></textarea>
-		</p>
-		<p class="">
-			<input type="submit" value="Submit Post"></input>
-		</p>
-	</form>
+	<p>
+		<span>Subject:</span>
+		<input id="postSubject" type="text"></input>
+	</p>
+	<p>
+		<span>Content:</span>
+		<textarea id="postContent" rows="10" cols="60"></textarea>
+	</p>
+	<p>
+		<input id="submitPost" type="button" value="Submit"></input>
+	</p>
 </div>

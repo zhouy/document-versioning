@@ -11,6 +11,7 @@ package controllers;
 import play.*;
 import play.mvc.*;
 
-public class Versions extends CRUD {
+public class Versions extends CRUD
+{
 	
 }

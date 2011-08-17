@@ -16,8 +16,8 @@ import java.util.*;
 import java.text.*;
 
 @Entity
-public class Version extends Model {
-	
+public class Version extends Model
+{	
 	@Required
 	@Lob
 	public String content;
@@ -32,8 +32,12 @@ public class Version extends Model {
 	@OneToMany(mappedBy="version", cascade=CascadeType.ALL)
 	public List<Comment> comments;
 	
-	public Version(Post post_, String content_) {
-		
+	public Version()
+	{		
+	}
+	
+	public Version(Post post_, String content_)
+	{
 		this.post = post_;
 		this.content = content_;
 		this.date = new Date();
@@ -41,21 +45,42 @@ public class Version extends Model {
 	}
 	
 	/* */
-	public List<Comment> getAllComments() {
-		
+	public List<Comment> getAllComments()
+	{
 		return this.comments;
 	}
 	
 	/* */
-	public Version addComment(Comment comment) {
-		
+	public Version addComment(Comment comment)
+	{
 		comments.add(comment);
 		return this;
 	}
 	
 	/* */
-	public String getTimef() {
-		
+	public Version deleteComment(Long id)
+	{
+		Comment retvar = null;
+		for(Comment acomment : comments)
+		{
+			if (acomment.id==id)
+			{
+				retvar = acomment;
+				comments.remove(acomment);
+				break;
+			}
+		}
+		if (retvar!=null)
+		{
+			retvar.delete();
+		}
+		this.save();
+		return this;
+	}
+	
+	/* */
+	public String getTimef()
+	{
 		return DateFormat.getDateTimeInstance(DateFormat.SHORT,
 											  DateFormat.SHORT).format(this.date);
 	}

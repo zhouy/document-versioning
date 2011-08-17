@@ -16,8 +16,8 @@ import java.util.*;
 import java.text.*;
 
 @Entity
-public class Comment extends Model {
-	
+public class Comment extends Model
+{	
 	@Required
 	public Date date;
 	
@@ -32,11 +32,15 @@ public class Comment extends Model {
 	@ManyToOne
 	public Version version;
 	
+	public Comment()
+	{
+	}
+	
 	/* */
 	public Comment(Version version_,
 				   String subject_,
-				   String content_) {
-		
+				   String content_)
+	{
 		this.version = version_;
 		this.subject = subject_;
 		this.content = content_;
@@ -44,15 +48,15 @@ public class Comment extends Model {
 	}
 	
 	/* */
-	public String getTimef() {
-		
+	public String getTimef()
+	{
 		return DateFormat.getDateTimeInstance(DateFormat.SHORT,
 											  DateFormat.SHORT).format(this.date);
 	}
 	
 	/* */
-	/*public <T extends JPABase> T delete() {
-		
+	public <T extends JPABase> T delete()
+	{
 		return super.delete();
-    }*/
+    }
 }
