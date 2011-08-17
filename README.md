@@ -18,4 +18,6 @@ For problematic copy:
 		
 	If using MYSQL5.5, please execute following command:
 		
-		alter table comment add constraint fk_comment_version foreign key (version_id) references version(id);
+		$ mysql -u root
+		mysql> use document_versioning
+		mysql> alter table comment add constraint fk_comment_version foreign key (version_id) references version(id);
