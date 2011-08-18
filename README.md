@@ -1,10 +1,10 @@
-For a working copy:
+Using memory as database:
 ---------
 * Uncomment the following line in app/conf/application.conf: 
 	
 		db=mem
 
-For problematic copy:
+Using MySQL 5:
 ---------
 * Create a database document_versioning using the following command:
 	
@@ -14,9 +14,7 @@ For problematic copy:
 	
 		db=mysql:root@document_versioning
 		
-* Problem solved
-		
-	If using MYSQL5.5, please execute following command:
+* It is possible that you encounter a problem of dependency (MySQL 5.5), please try execute following command:
 		
 		$ mysql -u root
 		mysql> use document_versioning

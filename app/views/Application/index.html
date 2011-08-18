@@ -28,7 +28,14 @@
 		margin-top: 10px;
 	}
 	
+	/* */
 	.versionBody
+	{
+		margin-left: 10px;
+	}
+	
+	/* */
+	.commentBody
 	{
 		margin-left: 10px;
 	}
@@ -51,9 +58,17 @@
 						"<hr/>" +
 						"<h3>" +
 						"(" + posts[p].subject + ") " +
+						/* Edit post */
 						"<span class='alink'" +
-						"id='e_p" + p + "' postId='" + posts[p].id +
+						"id='e_p" + p + "'" +
+						"postId='" + posts[p].id +
 						"'>Edit</span>" +
+						" " +
+						/* Delete post */
+						"<span class='alink'" +
+						"id='d_p" + p + "'" +
+						"postId='" + posts[p].id +
+						"'>Delete</span>" +
 						"</h3>"
 						);
 			
@@ -63,23 +78,26 @@
 			{
 				// Add version content
 				target.append(
+							"<h4>" +
 							"<p>" +
-							"<span>" +
 							"Version " + (parseInt(v) + 1) + " - " +
 							versions[v].date +
-							" </span>" +
+							" " +
 							/* Comment on version */
-							"<span class='alink' id='c_p" + p + "v" + v +
-							"' postId='" + posts[p].id +
-							"' versionId='" + versions[v].id +
-							"'>Comment</span>" +
+							"<span class='alink'" +
+							"id='c_p" + p + "v" + v + "'" +
+							"postId='" + posts[p].id + "'" +
+							"versionId='" + versions[v].id + "'" +
+							">Comment</span>" +
 							" " +
 							/* Delete version */
-							"<span class='alink' id='d_p" + p + "v" + v +
-							"' postId='" + posts[p].id +
-							"' versionId='" + versions[v].id +
-							"'>Delete</span>" +
+							"<span class='alink'" +
+							"id='d_p" + p + "v" + v + "'" +
+							"postId='" + posts[p].id + "'" +
+							"versionId='" + versions[v].id + "'" +
+							">Delete</span>" +
 							"</p>" +
+							"</h4>" +
 							/* Post version body */
 							"<p class='versionBody'>" +
 							versions[v].content +
@@ -93,10 +111,10 @@
 				{
 					ulComment.append(
 									"<li>" +
+									"<p>" +
 									"<span>" +
-									comments[c].date + " - " +
+									comments[c].date +
 									" (" + comments[c].subject + ") - " +
-									comments[c].content +
 									"</span>" +
 									" " +
 									/* Delete comment */
@@ -105,6 +123,11 @@
 									"versionId='" + versions[v].id + "'" +
 									"commentId='" + comments[c].id + "'>" +
 									"Delete</span>" +
+									"</p>" +
+									/* Comment body */
+									"<p class='commentBody'>" +
+									comments[c].content +
+									"</p>" +
 									"</li>"
 									);
 					target.append(ulComment);
@@ -139,6 +162,14 @@
 						{"postId":parseInt($(this).attr('postId'))},
 						prepareEditForm);
 			});
+			
+			// Add delete post click event handler
+			$('#d_p' + p).click(function()
+			{
+				$.getJSON('/ajaxDeletePost',
+						{"postId":parseInt($(this).attr('postId'))},
+						listPosts);
+			});
 		}
 	}
 	
@@ -166,7 +197,7 @@
 		{
 			var postId = $('#postEditId').attr('value');
 			var content = $('#postEditContent').attr('value');
-			$.getJSON('/ajaxPostEdit',
+			$.getJSON('/ajaxEditPost',
 					{"postId":postId,
 					"newContent":content},
 					doneEditPost);
@@ -239,6 +270,13 @@
 		listPosts();
 	}
 	
+	/* */
+	function clearPostForm()
+	{
+		 $('#postSubject').attr('value', "");
+		 $('#postContent').attr('value', "");
+	}
+	
 	/* Submit your post data */
 	function createPost()
 	{
@@ -251,6 +289,8 @@
 				"content":postContent},
 				parsePosts,
 				'json');
+				
+		clearPostForm();
 	}
 	
 	/* Html loaded event handler */
@@ -258,6 +298,7 @@
 		// Populate all posts on the front page
 		listPosts();
 		// Set click event handler on submitPost button
+		$('#clearPost').click(clearPostForm);
 		$('#submitPost').click(createPost);
 	});
 	
@@ -309,11 +350,11 @@
 </div>
 
 *{ All posts }*
-<h2>All posts</h2>
+<h2>All posts:</h2>
 <div id="postBody"></div>
 
 <hr/>
-<h2>Create a new post</h2>
+<h2>Create a new post:</h2>
 
 *{ Create post form }*
 <div id="createPost">
@@ -327,5 +368,6 @@
 	</p>
 	<p>
 		<input id="submitPost" type="button" value="Submit"></input>
+		<input id="clearPost" type="button" value="Clear"></input>
 	</p>
 </div>

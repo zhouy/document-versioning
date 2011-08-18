@@ -88,4 +88,10 @@ public class Post extends Model
 		this.save();
 		return this;
 	}
+	
+	/* */
+	public <T extends JPABase> T delete()
+	{
+		return super.delete();
+    }
 }

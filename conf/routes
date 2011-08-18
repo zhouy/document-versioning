@@ -9,7 +9,8 @@ GET     /                                       Application.index
 GET		/ajaxListPosts							Application.ajaxListPosts
 GET		/ajaxCreatePost							Application.ajaxCreatePost
 GET		/ajaxGenerateFormEdit					Application.ajaxGenerateFormEdit
-GET		/ajaxPostEdit							Application.ajaxPostEdit
+GET		/ajaxEditPost							Application.ajaxEditPost
+GET		/ajaxDeletePost							Application.ajaxDeletePost
 GET		/ajaxDeleteVersion						Application.ajaxDeleteVersion
 GET		/ajaxComment							Application.ajaxComment
 GET		/ajaxDeleteComment						Application.ajaxDeleteComment

@@ -151,13 +151,22 @@ public class Application extends Controller
 	/*
 	 *
 	 */
-	public static void ajaxPostEdit(Long postId, String newContent)
+	public static void ajaxEditPost(Long postId, String newContent)
 	{
 		Post post = Post.findById(postId);
 		Version newVersion = new Version(post, newContent).save();
 		System.out.println("* A new version is successfully created.");
 		post.addVersion(newVersion);
 		post.save();
+	}
+	
+	/*
+	 *
+	 */
+	public static void ajaxDeletePost(Long postId)
+	{
+		Post post = Post.findById(postId);
+		post.delete();
 	}
 	
 	/*
