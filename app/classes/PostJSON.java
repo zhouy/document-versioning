@@ -10,9 +10,8 @@ package classes;
 
 import java.util.*;
 
-public class PostJSON
+public class PostJSON extends EntityJSON
 {	
-	public Long id;
 	public String subject;
 	public List<VersionJSON> versions; 
 	

@@ -6,8 +6,6 @@ import java.util.*;
 import models.*;
 import javax.persistence.Query;
 import play.db.jpa.JPA;
-import java.text.*;
-import classes.*;
 
 public class Application extends Controller
 {
@@ -105,98 +103,5 @@ public class Application extends Controller
 		
 		/* Redirect to index page */
 		Application.index();
-	}
-	
-	/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-	/* Ajax section */
-	
-	/*
-	 * List all posts
-	 */
-	public static void ajaxListPosts()
-	{
-		Serializer serializer = Serializer.getInstance();
-		renderJSON(serializer.getAllPosts());
-	}
-	
-	/*
-	 * Create a post and save using Ajax
-	 */
-	public static void ajaxCreatePost(String subject, String content)
-	{
-		/*
-		 * Create a post and save
-		 * Create first version of the post
-		 * Create permalink of that version
-		 */
-		
-		Post post = new Post(subject).save();
-		System.out.println("* A new post is successfully created.");
-		Version aversion = new Version(post, content).save();
-		System.out.println("* A new version is successfully created.");
-		post.addVersion(aversion);
-		
-		Application.ajaxListPosts();
-	}
-	
-	/*
-	 *
-	 */
-	public static void ajaxGenerateFormEdit(Long postId)
-	{
-		Serializer serializer = Serializer.getInstance();
-		renderJSON(serializer.getPost(postId));
-	}
-	
-	/*
-	 *
-	 */
-	public static void ajaxEditPost(Long postId, String newContent)
-	{
-		Post post = Post.findById(postId);
-		Version newVersion = new Version(post, newContent).save();
-		System.out.println("* A new version is successfully created.");
-		post.addVersion(newVersion);
-		post.save();
-	}
-	
-	/*
-	 *
-	 */
-	public static void ajaxDeletePost(Long postId)
-	{
-		Post post = Post.findById(postId);
-		post.delete();
-	}
-	
-	/*
-	 *
-	 */
-	public static void ajaxDeleteVersion(Long postId, Long versionId)
-	{
-		Post post = Post.findById(postId);
-		post.deleteVersion(versionId);
-	}
-	
-	/*
-	 *
-	 */
-	public static void ajaxComment(Long versionId,
-								   String subject,
-								   String content)
-	{
-		Version version = Version.findById(versionId);
-		Comment comment = new Comment(version, subject, content).save();
-		version.addComment(comment);
-		version.save();
-	}
-	
-	/*
-	 *
-	 */
-	public static void ajaxDeleteComment(Long versionId, Long commentId)
-	{
-		Version version = Version.findById(versionId);
-		version.deleteComment(commentId);
 	}
 }

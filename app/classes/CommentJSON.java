@@ -10,9 +10,8 @@ package classes;
 
 import java.util.*;
 
-public class CommentJSON
+public class CommentJSON extends EntityJSON
 {	
-	public Long id;
 	public String subject;
 	public String content;
 	public String date;

@@ -158,7 +158,7 @@
 			// Add edit post click event handler
 			$('#e_p' + p).click(function()
 			{
-				$.getJSON('/ajaxGenerateFormEdit',
+				$.getJSON('/ajaxFormEdit',
 						{"postId":parseInt($(this).attr('postId'))},
 						prepareEditForm);
 			});
