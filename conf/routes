@@ -4,16 +4,20 @@
 
 # Home page
 GET     /                                       Application.index
+GET		/getTree								Application.getTree
 
-# Ajax post
-GET		/ajaxListPosts							Posts.ajaxListPosts
-GET		/ajaxCreatePost							Posts.ajaxCreatePost
-GET		/ajaxFormEdit							Posts.ajaxFormEdit
-GET		/ajaxEditPost							Posts.ajaxEditPost
-GET		/ajaxDeletePost							Posts.ajaxDeletePost
+# Documents, versions and comments
+GET		/ajaxListDocuments						Documents.ajaxListDocuments
+GET		/ajaxCreateDocument						Documents.ajaxCreateDocument
+GET		/ajaxFormEdit							Documents.ajaxFormEdit
+GET		/ajaxEditDocument						Documents.ajaxEditDocument
+GET		/ajaxDeleteDocument						Documents.ajaxDeleteDocument
 GET		/ajaxDeleteVersion						Versions.ajaxDeleteVersion
 GET		/ajaxComment							Comments.ajaxComment
 GET		/ajaxDeleteComment						Comments.ajaxDeleteComment
+
+# Build a post documentation tree
+GET		/ajaxBuildTree							Documents.ajaxBuildTree
 
 # Ignore favicon requests
 GET     /favicon.ico                            404
@@ -26,3 +30,6 @@ GET     /public/                                staticDir:public
 
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}
+
+# Import Secure routes
+*       /                                       module:secure

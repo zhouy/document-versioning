@@ -1,6 +1,6 @@
 //
 //  Permalink.java
-//  playPostPermalink
+//  playDocumentPermalink
 //
 //  Created by Zhou Yang on 8/2/11.
 //  Copyright 2011 zhouy@moofwd.com All rights reserved.
@@ -30,8 +30,7 @@ public class Permalink extends Model
 	}
 	
 	/* Constructor with all data members */
-	public Permalink(String subject_,
-				String content_)
+	public Permalink(String subject_, String content_)
 	{
 		this.subject = subject_;
 		this.content = content_;

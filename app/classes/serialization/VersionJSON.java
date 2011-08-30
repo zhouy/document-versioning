@@ -6,7 +6,7 @@
 //  Copyright 2011 zhouy@moofwd.com All rights reserved.
 //
 
-package classes;
+package classes.serialization;
 
 import java.util.*;
 
@@ -27,12 +27,15 @@ public class VersionJSON extends EntityJSON
 		this.id = id_;
 		this.content = content_;
 		this.date = date_;
-		this.comments = new ArrayList<CommentJSON>();
 	}
 	
 	/* */
 	public void addComment(CommentJSON comment)
 	{
+		if (this.comments==null)
+		{
+			this.comments = new ArrayList<CommentJSON>();
+		}
 		this.comments.add(comment);
 	}
 }

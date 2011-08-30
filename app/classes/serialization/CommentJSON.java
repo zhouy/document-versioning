@@ -6,7 +6,7 @@
 //  Copyright 2011 zhouy@moofwd.com All rights reserved.
 //
 
-package classes;
+package classes.serialization;
 
 import java.util.*;
 

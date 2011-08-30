@@ -1,6 +1,6 @@
 //
-//  Post.java
-//  playPostPermalink
+//  Document.java
+//  playDocumentPermalink
 //
 //  Created by Zhou Yang on 8/2/11.
 //  Copyright 2011 zhouy@moofwd.com All rights reserved.
@@ -15,11 +15,11 @@ import javax.persistence.*;
 import java.util.*;
 
 /*
- * For each document, only one post will be generated and it may contain several
+ * For each document, only one document will be generated and it may contain several
  * versions
  */
 @Entity
-public class Post extends Model
+public class Document extends Model
 {	
 	@Required
 	public String subject;
@@ -28,23 +28,26 @@ public class Post extends Model
 	@ManyToOne
 	public User author;
 	
-	@OneToMany(mappedBy="post", cascade=CascadeType.ALL)
+	public Long parentId;
+	
+	@OneToMany(mappedBy="document", cascade=CascadeType.ALL)
 	public List<Version> versions;
 	
-	public Post()
-	{
-	}
-	
 	/* Constructor with minmum requirements */
-	public Post(String subject_)
+	public Document(User author_, String subject_, Long parentId_)
 	{
+		this.author = author_;
 		this.subject = subject_;
-		this.versions = new ArrayList<Version>();
+		this.parentId = parentId_;
 	}
 	
-	/* Add a version to existing post */
-	public Post addVersion(Version aversion_)
+	/* Add a version to existing document */
+	public Document addVersion(Version aversion_)
 	{
+		if (this.versions==null)
+		{
+			this.versions = new ArrayList<Version>();
+		}
 		this.versions.add(aversion_);
 		return this;
 	}
@@ -67,10 +70,10 @@ public class Post extends Model
 	}
 	
 	/* */
-	public Post deleteVersion(Long id)
+	public Document deleteVersion(Long id)
 	{
 		// How to delete an entity with dependecy?
-		// If post contains only one version, then remove the post as well?
+		// If document contains only one version, then remove the document as well?
 		Version retvar = null;
 		for(Version aversion : versions)
 		{

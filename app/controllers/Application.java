@@ -6,68 +6,89 @@ import java.util.*;
 import models.*;
 import javax.persistence.Query;
 import play.db.jpa.JPA;
+import classes.*;
+import classes.serialization.*;
 
+@With(Secure.class)
 public class Application extends Controller
 {
 	/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 	/* Regular */
 	
 	/* */
+	@Before
+    static void setUser()
+	{
+        if(Security.isConnected())
+		{
+			Config config = Config.getInstance();
+            renderArgs.put("user", config.getUserEmail());
+        }
+    }
+	
+	/* */
     public static void index()
 	{
-		List<Post> posts = Post.all().fetch();
-        render(posts);
+		List<Document> documents = Document.all().fetch();
+		render(documents);
     }
 
 	/*
-	 * Create a post and save
+	 * Create a document and save
 	 */
-	public static void create(String subject, String content)
+	public static void create(String subject,
+							  String content,
+							  Long parentId)
 	{
 		/*
-		 * Create a post and save
-		 * Create first version of the post
+		 * Create a document and save
+		 * Create first version of the document
 		 * Create permalink of that version
 		 */
 		
-		Post post = new Post(subject).save();
-		Version aversion = new Version(post, content).save();
-		post.addVersion(aversion);
+		Config config = Config.getInstance();
+		User currentUser = User.findById(config.getUserId());
+		// Create a new document for current user, current user is defined in Config
+		Document document = new Document(currentUser, subject, parentId).save();
+		Version aversion = new Version(document, content).save();
+		document.addVersion(aversion);
 		
 		/* Redirect to index page */
 		Application.index();
 	}
 	
 	/*
-	 * Generate a form of existing post using the last version of that post
+	 * Generate a form of existing document using the last version of that document
 	 */
 	public static void form(Long id)
 	{
-		Post post = Post.findById(id);
-		Version lastVersion = post.getLastVersion();
-		render(id, post, lastVersion);
+		Document document = Document.findById(id);
+		Version lastVersion = document.getLastVersion();
+		render(id, document, lastVersion);
 	}
 	
 	/*
-	 * Edit the last version of a post and create a new version
+	 * Edit the last version of a document and create a new version
 	 */
 	public static void edit(Long id, String subject, String content)
 	{
-		Post post = Post.findById(id);
-		Version newVersion = new Version(post, content).save();
-		post.addVersion(newVersion);
-		post.save();
+		Document document = Document.findById(id);
+		Version newVersion = new Version(document, content).save();
+		document.addVersion(newVersion);
+		document.save();
 		
 		/* Redirect to index page */
 		Application.index();
 	}
 	
-	public static void comment(Long postId, Long versionId)
+	/* */
+	public static void comment(Long documentId, Long versionId)
 	{
-		render(postId, versionId);
+		render(documentId, versionId);
 	}
 	
-	public static void postComment(Long postId,
+	/* */
+	public static void documentComment(Long documentId,
 								   Long versionId,
 								   String subject,
 								   String content)
@@ -81,21 +102,17 @@ public class Application extends Controller
 		Application.index();
 	}
 	
-	/*
-	 *
-	 */
-	public static void deleteVersion(Long postId, Long versionId)
+	/* */
+	public static void deleteVersion(Long documentId, Long versionId)
 	{
-		Post post = Post.findById(postId);
-		post.deleteVersion(versionId);
+		Document document = Document.findById(documentId);
+		document.deleteVersion(versionId);
 		
 		/* Redirect to index page */
 		Application.index();
 	}
 	
-	/*
-	 *
-	 */
+	/* */
 	public static void deleteComment(Long versionId, Long commentId)
 	{
 		Version version = Version.findById(versionId);
@@ -104,4 +121,5 @@ public class Application extends Controller
 		/* Redirect to index page */
 		Application.index();
 	}
+	
 }

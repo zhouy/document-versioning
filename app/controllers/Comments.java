@@ -1,6 +1,6 @@
 //
 //  Comments.java
-//  playPostPermalink
+//  playDocumentPermalink
 //
 //  Created by Zhou Yang on 8/9/11.
 //  Copyright 2011 zhouy@moofwd.com All rights reserved.
@@ -14,13 +14,12 @@ import java.util.*;
 import models.*;
 import javax.persistence.Query;
 import play.db.jpa.JPA;
-import classes.*;
+import classes.serialization.*;
 
+@With(Secure.class)
 public class Comments extends CRUD
 {
-	/*
-	 *
-	 */
+	/* */
 	public static void ajaxComment(Long versionId,
 								   String subject,
 								   String content)
@@ -31,9 +30,7 @@ public class Comments extends CRUD
 		version.save();
 	}
 	
-	/*
-	 *
-	 */
+	/* */
 	public static void ajaxDeleteComment(Long versionId, Long commentId)
 	{
 		Version version = Version.findById(versionId);

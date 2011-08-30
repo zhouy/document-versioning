@@ -1,6 +1,6 @@
 //
-//  PostEntry.java
-//  playPostPermalink
+//  DocumentEntry.java
+//  playDocumentPermalink
 //
 //  Created by Zhou Yang on 8/2/11.
 //  Copyright 2011 zhouy@moofwd.com All rights reserved.
@@ -27,7 +27,7 @@ public class Version extends Model
 	
 	@Required
 	@ManyToOne
-	public Post post;
+	public Document document;
 	
 	@OneToMany(mappedBy="version", cascade=CascadeType.ALL)
 	public List<Comment> comments;
@@ -36,12 +36,11 @@ public class Version extends Model
 	{		
 	}
 	
-	public Version(Post post_, String content_)
+	public Version(Document document_, String content_)
 	{
-		this.post = post_;
+		this.document = document_;
 		this.content = content_;
 		this.date = new Date();
-		this.comments = new ArrayList<Comment>();
 	}
 	
 	/* */
@@ -53,7 +52,12 @@ public class Version extends Model
 	/* */
 	public Version addComment(Comment comment)
 	{
-		comments.add(comment);
+		// Use lazy initialization whenever possible
+		if (this.comments==null)
+		{
+			this.comments = new ArrayList<Comment>();
+		}
+		this.comments.add(comment);
 		return this;
 	}
 	

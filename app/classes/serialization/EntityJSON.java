@@ -6,11 +6,11 @@
 //  Copyright 2011 yangzhou1030@gmail.com. All rights reserved.
 //
 
-package classes;
+package classes.serialization;
 
 import java.util.*;
 
-public class EntityJSON
+abstract public class EntityJSON
 {
 	public Long id;
 	

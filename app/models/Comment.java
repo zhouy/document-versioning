@@ -1,6 +1,6 @@
 //
 //  Comment.java
-//  playPostPermalink
+//  playDocumentPermalink
 //
 //  Created by Zhou Yang on 8/3/11.
 //  Copyright 2011 zhouy@moofwd.com All rights reserved.

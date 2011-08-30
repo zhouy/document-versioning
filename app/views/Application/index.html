@@ -1,144 +1,148 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
-*{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }*
-*{ Ajax posting code starts here }*
+<!-- Ajax documenting code starts here, style and javascript -->
 
 <style type="text/css">
-
 	/* Clickable text */
-	.alink
-	{
+	.alink {
 		color: #339977;
 		text-decoration: underline;
 		cursor: pointer;
 	}
-	
 	/* */
-	ul
-	{
-		list-style-type: none;
-		margin-top: 0px;
-		margin-left: 0px;
+	.document-body {
+		margin-top: 20px;
 	}
-	
 	/* */
-	li
-	{
-		margin-top: 10px;
+	.version-body {
+		margin-top: 20px;
+		margin-left: 20px;
 	}
-	
 	/* */
-	.versionBody
-	{
-		margin-left: 10px;
+	.comment-body {
+		margin-top: 20px;
+		margin-left: 20px;
 	}
-	
-	/* */
-	.commentBody
-	{
-		margin-left: 10px;
-	}
-	
 </style>
 
 <script type="text/javascript">
 
-	/* Parse posts JSON data */
-	function parsePosts(posts)
-	{
-		var target = $('#postBody');
-		target.html("");
+	/* Parse documents JSON data */
+	function parseDocuments(documents) {
+	
+		var target = $('#document-body');
+		target.html("<div></div>"); 
 		
-		// Populate all post in returned JSON data object
-		for (var p in posts)
-		{
-			// Add post title
+		// Populate all document in returned JSON data object
+		for (var p in documents) {
+		
+			var versionHtml = $("<div></div>");
+			// Add document title
 			target.append(
-						"<hr/>" +
-						"<h3>" +
-						"(" + posts[p].subject + ") " +
-						/* Edit post */
-						"<span class='alink'" +
-						"id='e_p" + p + "'" +
-						"postId='" + posts[p].id +
-						"'>Edit</span>" +
-						" " +
-						/* Delete post */
-						"<span class='alink'" +
-						"id='d_p" + p + "'" +
-						"postId='" + posts[p].id +
-						"'>Delete</span>" +
-						"</h3>"
-						);
+						$('#document-template')
+							.clone()
+							.removeAttr('id')
+							.attr('class', "document-body")
+							.css('display', "block")
+						// Set document title
+						.find('#document-title')
+							.prepend("(" + documents[p].subject + ")")
+							.end()
+						// Edit document
+						.find('#document-edit')
+							.attr('class', "alink")
+							.attr('id', "e_p" + p)
+							.attr('documentId', documents[p].id)
+							.end()
+						// Delete document
+						.find('#document-delete')
+							.attr('class', "alink")
+							.attr('id', "d_p" + p)
+							.attr('documentId', documents[p].id)
+							.end()
+						.find('#document-versions')
+							.prepend(versionHtml)
+							.end());
 			
-			var versions = posts[p].versions;
-			// Populate all versions of the post
-			for (var v in versions)
-			{
+			var versions = documents[p].versions;
+			// Populate all versions of the document
+			for (var v in versions) {
+			
+				var commentHtml = $("<div></div>");
 				// Add version content
-				target.append(
-							"<h4>" +
-							"<p>" +
-							"Version " + (parseInt(v) + 1) + " - " +
-							versions[v].date +
-							" " +
-							/* Comment on version */
-							"<span class='alink'" +
-							"id='c_p" + p + "v" + v + "'" +
-							"postId='" + posts[p].id + "'" +
-							"versionId='" + versions[v].id + "'" +
-							">Comment</span>" +
-							" " +
-							/* Delete version */
-							"<span class='alink'" +
-							"id='d_p" + p + "v" + v + "'" +
-							"postId='" + posts[p].id + "'" +
-							"versionId='" + versions[v].id + "'" +
-							">Delete</span>" +
-							"</p>" +
-							"</h4>" +
-							/* Post version body */
-							"<p class='versionBody'>" +
-							versions[v].content +
-							"</p>"
-							);
-							
+				versionHtml.append(
+								$('#version-template')
+									.clone()
+									.removeAttr('id')
+									.attr('class', "version-body")
+									.css('display', "block")
+								// Version date
+								.find('#version-date')
+									.prepend("Version "
+											+ (parseInt(v) + 1)
+											+ " - "
+											+ versions[v].date)
+									.end()
+								// Make comment on version
+								.find('#version-comment')
+									.attr('class', "alink")
+									.attr('id', "c_p" + p + "v" + v)
+									.attr('documentId', documents[p].id)
+									.attr('versionId', versions[v].id)
+									.end()
+								// Delete a version
+								.find('#version-delete')
+									.attr('class', "alink")
+									.attr('id', "d_p" + p + "v" + v)
+									.attr('documentId', documents[p].id)
+									.attr('versionId', versions[v].id)
+									.end()
+								// Comment body
+								.find('#version-body')
+									.prepend(versions[v].content)
+									.end()
+								.find('#version-comments')
+									.prepend(commentHtml)
+									.end());
+				
 				var comments = versions[v].comments;
-				var ulComment = $("<ul></ul>");
 				// Add comments to the version
-				for (var c in comments)
-				{
-					ulComment.append(
-									"<li>" +
-									"<p>" +
-									"<span>" +
-									comments[c].date +
-									" (" + comments[c].subject + ") - " +
-									"</span>" +
-									" " +
-									/* Delete comment */
-									"<span class='alink'" + 
-									"id='d_v" + v + "c" + c + "'" +
-									"versionId='" + versions[v].id + "'" +
-									"commentId='" + comments[c].id + "'>" +
-									"Delete</span>" +
-									"</p>" +
-									/* Comment body */
-									"<p class='commentBody'>" +
-									comments[c].content +
-									"</p>" +
-									"</li>"
-									);
-					target.append(ulComment);
-									
+				for (var c in comments) {
+				
+					commentHtml.append(
+									$('#comment-template')
+										.clone()
+										.removeAttr('id')
+										.attr('class', "comment-body")
+										.css('display', "block")
+									// Comment date
+									.find('#comment-date')
+										.prepend(comments[c].date)
+										.end()
+									// Comment date
+									.find('#comment-title')
+										.prepend("(" + comments[c].subject + ")")
+										.end()
+									// Make comment on version
+									.find('#comment-delete')
+										.attr('class', "alink")
+										.attr('id', "d_v" + v + "c" + c)
+										.attr('versionId', versions[v].id)
+										.attr('commentId', comments[c].id)
+										.end()
+									// Comment date
+									.find('#comment-body')
+										.prepend(comments[c].content)
+										.end());
+				
 					// Add delete comment click event handler
-					$('#d_v' + v + 'c' + c).click(function()
-					{
+					$('#d_v' + v + 'c' + c).click(function() {
+					
 						$.getJSON('/ajaxDeleteComment',
-								{"versionId":$(this).attr('versionId'),
-								"commentId":$(this).attr('commentId')},
-								listPosts);
+								{ "versionId": $(this).attr('versionId'),
+								  "commentId": $(this).attr('commentId') },
+								listDocuments);
 					});
 				}
 				
@@ -146,228 +150,364 @@
 				$('#c_p' + p + 'v' + v).click(prepareCommentForm);
 				
 				// Add delete version click event handler
-				$('#d_p' + p + 'v' + v).click(function()
-				{
+				$('#d_p' + p + 'v' + v).click(function() {
+				
 					$.getJSON('/ajaxDeleteVersion',
-							{"postId":parseInt($(this).attr('postId')),
-							"versionId":parseInt($(this).attr('versionId'))},
-							listPosts);
+							{ "documentId": parseInt($(this).attr('documentId')),
+							  "versionId": parseInt($(this).attr('versionId')) },
+							listDocuments);
 				});
 			}
 			
-			// Add edit post click event handler
-			$('#e_p' + p).click(function()
-			{
+			// Add edit document click event handler
+			$('#e_p' + p).click(function() {
+			
 				$.getJSON('/ajaxFormEdit',
-						{"postId":parseInt($(this).attr('postId'))},
+						{ "documentId": parseInt($(this).attr('documentId')) },
 						prepareEditForm);
 			});
 			
-			// Add delete post click event handler
-			$('#d_p' + p).click(function()
-			{
-				$.getJSON('/ajaxDeletePost',
-						{"postId":parseInt($(this).attr('postId'))},
-						listPosts);
+			// Add delete document click event handler
+			$('#d_p' + p).click(function() {
+			
+				$.getJSON('/ajaxDeleteDocument',
+						{ "documentId": parseInt($(this).attr('documentId')) },
+						listDocuments);
 			});
 		}
+		
+		// Reload document tree node structure
+		loadTree();
 	}
 	
 	/* */
-	function listPosts()
+	function prepareEditForm(document)
 	{
-		$.getJSON('/ajaxListPosts',
-				null,
-				parsePosts);
-	}
-	
-	/* */
-	function prepareEditForm(post)
-	{
-		$('#formEditPost').css('display', "block");
-		$('#postEditId').attr('value', post.id);
-		$('#postEditSubject').attr('value', post.subject);
+		$('#form-edit-document').css('display', "block");
+		$('#document-edit-id').attr('value', document.id);
+		$('#document-edit-subject').attr('value', document.subject);
 		// Set target text with the content of the only version
-		$('#postEditContent').attr('value', post.versions[0]
-											? post.versions[0].content
+		$('#document-edit-content').attr('value', document.versions[0]
+											? document.versions[0].content
 											: "");
 		
-		$('#submitEditPost').unbind();
-		$('#submitEditPost').click(function()
-		{
-			var postId = $('#postEditId').attr('value');
-			var content = $('#postEditContent').attr('value');
-			$.getJSON('/ajaxEditPost',
-					{"postId":postId,
-					"newContent":content},
-					doneEditPost);
+		$('#submit-edit-document').unbind();
+		
+		$('#submit-edit-document').click(function() {
+		
+			var documentId = $('#document-edit-id').attr('value');
+			var content = $('#document-edit-content').attr('value');
+			$.getJSON('/ajaxEditDocument',
+					{ "documentId": documentId,
+					  "newContent": content },
+					doneEditDocument);
 		});
 		
-		$('#cancelEditPost').unbind();
-		$('#cancelEditPost').click(function()
-		{
-			$('#postEditId').attr('value', "");
-			$('#postEditSubject').attr('value', "");
-			$('#postEditContent').attr('value', "");
-			$('#formEditPost').css('display', "none");
+		$('#cancel-edit-document').unbind();
+		
+		$('#cancel-edit-document').click(function() {
+		
+			$('#document-edit-id').attr('value', "");
+			$('#document-edit-subject').attr('value', "");
+			$('#document-edit-content').attr('value', "");
+			$('#form-edit-document').css('display', "none");
 			// Clear submit click event listener
-			$('#submitEditPost').unbind();
+			$('#submit-edit-document').unbind();
 		});
 	}
 	
 	/* */
-	function doneEditPost()
-	{
-		$('#cancelEditPost').click();
+	function doneEditDocument() {
+	
+		$('#cancel-edit-document').click();
 		// Click events stacks, clear click event listener on submit button
-		$('#submitEditPost').unbind();
-		listPosts();
+		$('#submit-edit-document').unbind();
+		listDocuments();
 	}
 	
 	/* */
-	function prepareCommentForm(post)
-	{
-		$('#createComment').css('display', "block");
-		$('#commentVersionId').attr('value', $(this).attr('versionId'));
+	function prepareCommentForm(document) {
+	
+		$('#create-comment').css('display', "block");
+		$('#comment-version-id').attr('value', $(this).attr('versionId'));
 		
-		$('#submitComment').unbind();
-		$('#submitComment').click(function()
-		{
-			var versionId = $('#commentVersionId').attr('value');
-			var subject = $('#commentSubject').attr('value');
-			var content = $('#commentContent').attr('value');
+		$('#submit-comment').unbind();
+		$('#submit-comment').click(function() {
+		
+			var versionId = $('#comment-version-id').attr('value');
+			var subject = $('#comment-subject').attr('value');
+			var content = $('#comment-content').attr('value');
+			
 			$.getJSON('/ajaxComment',
-					{"versionId":versionId,
-					"subject":subject,
-					"content":content},
+					{ "versionId": versionId,
+					  "subject": subject,
+					  "content": content },
 					doneComment);
 		});
 		
-		$('#clearComment').unbind();
-		$('#clearComment').click(function()
-		{
-			$('#commentVersionId').attr('value', "");
-			$('#commentSubject').attr('value', "");
-			$('#commentContent').attr('value', "");
+		$('#clear-comment').unbind();
+		$('#clear-comment').click(function() {
+		
+			$('#comment-version-id').attr('value', "");
+			$('#comment-subject').attr('value', "");
+			$('#comment-content').attr('value', "");
 		});
 		
-		$('#cancelComment').unbind();
-		$('#cancelComment').click(function()
-		{
-			$('#clearComment').click();
-			$('#createComment').css('display', "none");
+		$('#cancel-comment').unbind();
+		$('#cancel-comment').click(function() {
+		
+			$('#clear-comment').click();
+			$('#create-comment').css('display', "none");
 			// Clear submit click event listener
-			$('#submitComment').unbind();
+			$('#submit-comment').unbind();
 		});
 	}
 	
 	/* */
-	function doneComment()
-	{
-		$('#cancelComment').click();
+	function doneComment() {
+	
+		$('#cancel-comment').click();
 		// Click events stacks, clear click event listener on submit button
-		$('#submitComment').unbind();
-		listPosts();
+		$('#submit-comment').unbind();
+		listDocuments();
 	}
 	
 	/* */
-	function clearPostForm()
-	{
-		 $('#postSubject').attr('value', "");
-		 $('#postContent').attr('value', "");
+	function clearDocumentForm() {
+	
+		 $('#document-subject').attr('value', "");
+		 $('#document-content').attr('value', "");
 	}
 	
-	/* Submit your post data */
-	function createPost()
-	{
-		var postSubject = $('#postSubject').val();
-		var postContent = $('#postContent').val();
+	/* Submit your document data */
+	function createDocument() {
+	
+		var subject = $('#document-subject').val();
+		var content = $('#document-content').val();
+		var parentId = $('#document-parent-id').val();
 		
-		// Send post data using jQuery Ajax post() method
-		$.getJSON('/ajaxCreatePost',
-				{"subject":postSubject,
-				"content":postContent},
-				parsePosts,
+		// Send document data using jQuery Ajax document() method
+		$.getJSON('/ajaxCreateDocument',
+				{ "subject": subject,
+				  "content": content,
+				  "parentId": parentId
+				},
+				parseDocuments,
 				'json');
 				
-		clearPostForm();
+		clearDocumentForm();
 	}
 	
-	/* Html loaded event handler */
+	/* */
+	function listDocuments() {
+	
+		$.getJSON('/ajaxListDocuments',
+				null,
+				parseDocuments,
+				'json');
+	}
+	
+	/* */
+	function loadTree() {
+	
+		$.getJSON('/ajaxBuildTree',
+				null,
+				buildTree,
+				'json');
+	}
+	
+	/* */
+	function buildTree(treeData) {
+		
+		$(function () {
+			$('#create-new-node').unbind();
+			$('#create-new-node').click(function() {
+				/*$('#document-tree').jstree("create",
+							null,
+							"inside",
+							{ "data": "New node" },
+							function() {
+								// Node creation call back function
+							},
+							true);*/
+				if ($.tree.node_selected) {
+				
+					var subject = $('#document-subject').val();
+					var content = $('#document-content').val();
+					var parentId = $.tree.node_selected.attr("id");
+					
+					// Send document data using jQuery Ajax document() method
+					$.getJSON('/ajaxCreateDocument',
+							{ "subject": subject,
+							  "content": content,
+							  "parentId": parentId
+							},
+							parseDocuments,
+							'json');
+							
+					clearDocumentForm();
+				}
+			});
+			$('#remove-node').unbind();
+			$('#remove-node').click(function() {
+				$('#document-tree').jstree("remove");
+			});
+			$('#document-tree').jstree({
+				"json_data": { "data": treeData },
+				"plugins": [ "themes", "json_data", "ui"]
+			})
+			.bind("select_node.jstree", function(event, data) {
+				// When a node is clicked, set a buffer value to tree element
+				$.tree.node_selected = data.rslt.obj;
+				
+			})
+			.delegate("a", "click", function(event, data) {
+				event.preventDefault();
+			});
+		});
+	}
+	
+	/* DOM objects loaded event handler */
 	$(document).ready(function() {
-		// Populate all posts on the front page
-		listPosts();
-		// Set click event handler on submitPost button
-		$('#clearPost').click(clearPostForm);
-		$('#submitPost').click(createPost);
+		
+		// Populate all documents on the front page
+		listDocuments();
+		// Set click event handler on submit-document button
+		$('#clear-document').click(clearDocumentForm);
+		$('#submit-document').click(createDocument);
+		
+		// Initialization
+		$.tree = new Object();
+		$.tree.node_selected = null;
+		
+		// jquery Layout
+		$('body').layout({ applyDefaultStyles: true });
 	});
 	
 </script>
 
-<h1>Document versioning with Ajax posting</h1>
-<hr/>
+<!-- Markups starts here -->
 
-*{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ }*
-*{ Edit post form }*
-<div id="formEditPost" style="display:none;">
-	<h3>Edit post:</h3>
-	<p>
-		<input type="hidden" id="postEditId"></input>
-	</p>
-	<p>
-		<span>Subject:</span>
-		<input id="postEditSubject" value=""></input>
-	</p>
-	<p>
-		<span>Content:</span>
-		<textarea id="postEditContent" rows="10" cols="60"></textarea>
-	</p>
-	<p>
-		<input type="submit" id="submitEditPost" value="Submit"></input>
-		<input type="button" id="cancelEditPost" value="Cancel"></input>
-	</p>
+<!-- Left column contains document tree structure -->
+<div class="ui-layout-west">
+	<h2>Document tree:</h2>
+	<div id="document-tree"></div>
+	<div>
+		<h4>
+			<span id="create-new-node" class="alink">Create</span>
+			<span id="remove-node" class="alink">Remove</span>
+		</h4>
+	</div>
 </div>
 
-*{ Create comment form }*
-<div id="createComment"  style="display:none;">
-	<h3>Comment:</h3>
-	<p>
-		<input type="hidden" id="commentVersionId"></input>
-	</p>
-	<p>
-		<span>Subject:</span>
-		<input id="commentSubject" type="text"></input>
-	</p>
-	<p>
-		<span>Content:</span>
-		<textarea id="commentContent" rows="10" cols="60"></textarea>
-	</p>
-	<p>
-		<input id="submitComment" type="button" value="Submit"></input>
-		<input id="clearComment" type="button" value="Clear"></input>
-		<input id="cancelComment" type="button" value="Cancel"></input>
-	</p>
-</div>
+<!-- Right column contains document body -->
+<div class="ui-layout-center">
 
-*{ All posts }*
-<h2>All posts:</h2>
-<div id="postBody"></div>
+	<!-- Edit document form -->
+	<div id="form-edit-document" style="display:none;">
+		<h3>Edit document:</h3>
+		<p>
+			<input type="hidden" id="document-edit-id"></input>
+		</p>
+		<p>
+			<span>Subject:</span>
+			<input id="document-edit-subject" value=""></input>
+		</p>
+		<p>
+			<span>Content:</span>
+			<textarea id="document-edit-content" rows="10" cols="60"></textarea>
+		</p>
+		<p>
+			<input type="submit" id="submit-edit-document" value="Submit"></input>
+			<input type="button" id="cancel-edit-document" value="Cancel"></input>
+		</p>
+	</div>
 
-<hr/>
-<h2>Create a new post:</h2>
+	<!-- Create comment form -->
+	<div id="create-comment"  style="display:none;">
+		<h3>Comment:</h3>
+		<p>
+			<input type="hidden" id="comment-version-id"></input>
+		</p>
+		<p>
+			<span>Subject:</span>
+			<input id="comment-subject" type="text"></input>
+		</p>
+		<p>
+			<span>Content:</span>
+			<textarea id="comment-content" rows="10" cols="60"></textarea>
+		</p>
+		<p>
+			<input id="submit-comment" type="button" value="Submit"></input>
+			<input id="clear-comment" type="button" value="Clear"></input>
+			<input id="cancel-comment" type="button" value="Cancel"></input>
+		</p>
+	</div>
 
-*{ Create post form }*
-<div id="createPost">
-	<p>
-		<span>Subject:</span>
-		<input id="postSubject" type="text"></input>
-	</p>
-	<p>
-		<span>Content:</span>
-		<textarea id="postContent" rows="10" cols="60"></textarea>
-	</p>
-	<p>
-		<input id="submitPost" type="button" value="Submit"></input>
-		<input id="clearPost" type="button" value="Clear"></input>
-	</p>
+	<!-- All documents -->
+	<h2>All documents:</h2>
+	<div id="document-body"></div>
+
+	<hr/>
+	<h2>Create a new document:</h2>
+
+	<!-- Create document form -->
+	<div id="createDocument">
+		<p>
+			<span>Subject:</span>
+			<input id="document-subject" type="text"></input>
+		</p>
+		<p>
+			<span>Content:</span>
+			<textarea id="document-content" rows="10" cols="60"></textarea>
+		</p>
+		<p>
+			<span>Parent Id:</span>
+			<input id="document-parent-id" type="text" value="0" readonly></input>
+		</p>
+		<p>
+			<input id="submit-document" type="button" value="Submit"></input>
+			<input id="clearDocument" type="button" value="Clear"></input>
+		</p>
+	</div>
+
+	<!-- Templates -->
+
+	<!-- Document template -->
+	<div id="document-template" style="display:none;">
+		<h3>
+			<span id="document-title"></span>
+			<span id="document-edit">Edit</span>
+			<span id="document-delete">Delete</span>
+		</h3>
+		<p>
+			<div id="document-versions"></div>
+		</p>
+	</div>
+
+	<!-- Version template -->
+	<div id="version-template" style="display:none;">
+		<h4>
+			<span id="version-date"></span>
+			<span id="version-comment">Comment</span>
+			<span id="version-delete">Delete</span>
+		</h4>
+		<p>
+			<span id="version-body"></span>
+			<div id="version-comments"></div>
+		</p>
+	</div>
+
+	<!-- Comment template -->
+	<div id="comment-template" style="display:none;">
+		<p>
+			<span id="comment-date"></span>
+			<span id="comment-title"></span>
+			<span id="comment-delete">Delete</span>
+		</p>
+		<p>
+			<span id="comment-body"></span>
+		</p>
+	</div>
+<!-- End of ui center layout -->
 </div>

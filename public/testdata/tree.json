@@ -1,0 +1,16 @@
+{
+	"id":"root",
+	"data":"Root",
+	"type":"fr",
+	"children":
+	[
+		{
+			"data":"A",
+			"type":"fr"
+		},
+		{
+			"data":"B",
+			"type":"fr"
+		}
+	]
+}
