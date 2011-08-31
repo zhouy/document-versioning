@@ -26,10 +26,19 @@ public class Documents extends CRUD
 	/*
 	 * List all documents
 	 */
-	public static void ajaxListDocuments()
+	public static void ajaxAllDocuments()
 	{
 		Serializer serializer = Serializer.getInstance();
 		renderJSON(serializer.getAllDocuments());
+	}
+	
+	/*
+	 * List only requested documents
+	 */
+	public static void ajaxRequestDocuments(Long[] documentIds)
+	{
+		Serializer serializer = Serializer.getInstance();
+		renderJSON(serializer.getDocuments(documentIds));
 	}
 	
 	/*
@@ -54,20 +63,23 @@ public class Documents extends CRUD
 		System.out.println("* A new version is successfully created.");
 		document.addVersion(aversion);
 		
-		Documents.ajaxListDocuments();
+		Documents.ajaxAllDocuments();
 	}
 	
 	/* */
 	public static void ajaxFormEdit(Long documentId)
 	{
 		Serializer serializer = Serializer.getInstance();
-		renderJSON(serializer.getDocument(documentId));
+		renderJSON(serializer.getDocumentLastVersion(documentId));
 	}
 	
 	/* */
-	public static void ajaxEditDocument(Long documentId, String newContent)
+	public static void ajaxEditDocument(Long documentId,
+										String newTitle,
+										String newContent)
 	{
 		Document document = Document.findById(documentId);
+		document.changeSubject(newTitle);
 		Version newVersion = new Version(document, newContent).save();
 		System.out.println("* A new version is successfully created.");
 		document.addVersion(newVersion);
@@ -77,8 +89,22 @@ public class Documents extends CRUD
 	/* */
 	public static void ajaxDeleteDocument(Long documentId)
 	{
-		Document document = Document.findById(documentId);
-		document.delete();
+		// If it is not the root document we are going to delete
+		if (documentId!=0L)
+		{
+			Document document = Document.findById(documentId);
+			List<Document> children = Document.find(
+								"select p from Document p where p.parentId=?",
+								document.id).fetch();
+			// If target document contains children documents
+			// then remove all children, don't leave scala documents
+			int i = 0;
+			for (i=0; i<children.size(); i++)
+			{
+				children.get(i).delete();
+			}
+			document.delete();
+		}
 	}
 	
 	/* */

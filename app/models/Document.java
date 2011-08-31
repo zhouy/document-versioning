@@ -93,6 +93,13 @@ public class Document extends Model
 	}
 	
 	/* */
+	public Document changeSubject(String subject_)
+	{
+		this.subject = subject_;
+		return this;
+	}
+	
+	/* */
 	public <T extends JPABase> T delete()
 	{
 		return super.delete();

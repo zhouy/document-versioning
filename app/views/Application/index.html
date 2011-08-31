@@ -1,13 +1,21 @@
 #{extends 'main.html' /}
-#{set title:'Home' /}
+#{set title:'Moofwd Documentation Site' /}
 
 <!-- Ajax documenting code starts here, style and javascript -->
 
 <style type="text/css">
 	/* Clickable text */
+	body {
+		font-family: "Trebuchet MS", "sans-serif";
+		font-size: 13px;
+	}
 	.alink {
-		color: #339977;
-		text-decoration: underline;
+		color: #0066dd;
+		cursor: pointer;
+	}
+	.alink:hover {
+		color: #0055cc;
+		background-color: #ddffdd;
 		cursor: pointer;
 	}
 	/* */
@@ -155,7 +163,7 @@
 					$.getJSON('/ajaxDeleteVersion',
 							{ "documentId": parseInt($(this).attr('documentId')),
 							  "versionId": parseInt($(this).attr('versionId')) },
-							listDocuments);
+							doneDeleteVersion);
 				});
 			}
 			
@@ -172,104 +180,30 @@
 			
 				$.getJSON('/ajaxDeleteDocument',
 						{ "documentId": parseInt($(this).attr('documentId')) },
-						listDocuments);
+						doneDeleteDocument);
 			});
 		}
-		
-		// Reload document tree node structure
-		loadTree();
 	}
 	
 	/* */
-	function prepareEditForm(document)
-	{
-		$('#form-edit-document').css('display', "block");
-		$('#document-edit-id').attr('value', document.id);
-		$('#document-edit-subject').attr('value', document.subject);
-		// Set target text with the content of the only version
-		$('#document-edit-content').attr('value', document.versions[0]
-											? document.versions[0].content
-											: "");
-		
-		$('#submit-edit-document').unbind();
-		
-		$('#submit-edit-document').click(function() {
-		
-			var documentId = $('#document-edit-id').attr('value');
-			var content = $('#document-edit-content').attr('value');
-			$.getJSON('/ajaxEditDocument',
-					{ "documentId": documentId,
-					  "newContent": content },
-					doneEditDocument);
+	function prepareCreateForm() {
+	
+		$('#create-document').css('display', "block");
+		$('#document-body').css('display', "none");
+		$('#submit-document').unbind();
+		$('#submit-document').click(function() {
+			createDocument();
 		});
 		
-		$('#cancel-edit-document').unbind();
-		
-		$('#cancel-edit-document').click(function() {
-		
-			$('#document-edit-id').attr('value', "");
-			$('#document-edit-subject').attr('value', "");
-			$('#document-edit-content').attr('value', "");
-			$('#form-edit-document').css('display', "none");
-			// Clear submit click event listener
-			$('#submit-edit-document').unbind();
-		});
-	}
-	
-	/* */
-	function doneEditDocument() {
-	
-		$('#cancel-edit-document').click();
-		// Click events stacks, clear click event listener on submit button
-		$('#submit-edit-document').unbind();
-		listDocuments();
-	}
-	
-	/* */
-	function prepareCommentForm(document) {
-	
-		$('#create-comment').css('display', "block");
-		$('#comment-version-id').attr('value', $(this).attr('versionId'));
-		
-		$('#submit-comment').unbind();
-		$('#submit-comment').click(function() {
-		
-			var versionId = $('#comment-version-id').attr('value');
-			var subject = $('#comment-subject').attr('value');
-			var content = $('#comment-content').attr('value');
-			
-			$.getJSON('/ajaxComment',
-					{ "versionId": versionId,
-					  "subject": subject,
-					  "content": content },
-					doneComment);
+		$('#clear-document').unbind();
+		$('#clear-document').click(function() {
+			clearDocumentForm();
 		});
 		
-		$('#clear-comment').unbind();
-		$('#clear-comment').click(function() {
-		
-			$('#comment-version-id').attr('value', "");
-			$('#comment-subject').attr('value', "");
-			$('#comment-content').attr('value', "");
+		$('#cancel-document').unbind();
+		$('#cancel-document').click(function() {
+			cancelDocumentForm();
 		});
-		
-		$('#cancel-comment').unbind();
-		$('#cancel-comment').click(function() {
-		
-			$('#clear-comment').click();
-			$('#create-comment').css('display', "none");
-			// Clear submit click event listener
-			$('#submit-comment').unbind();
-		});
-	}
-	
-	/* */
-	function doneComment() {
-	
-		$('#cancel-comment').click();
-		// Click events stacks, clear click event listener on submit button
-		$('#submit-comment').unbind();
-		listDocuments();
 	}
 	
 	/* */
@@ -277,6 +211,14 @@
 	
 		 $('#document-subject').attr('value', "");
 		 $('#document-content').attr('value', "");
+	}
+	
+	/* */
+	function cancelDocumentForm() {
+	
+		clearDocumentForm();
+		$('#create-document').css('display', "none");
+		$('#document-body').css('display', "block");
 	}
 	
 	/* Submit your document data */
@@ -292,19 +234,170 @@
 				  "content": content,
 				  "parentId": parentId
 				},
-				parseDocuments,
+				doneCreateDocument,
 				'json');
-				
+	}
+	
+	/* Done creating new document */
+	function doneCreateDocument()
+	{
 		clearDocumentForm();
+		$('#create-document').css('display', "none");
+		$('#document-body').css('display', "block");
+		// Request for tree refresh
+		$.tree.refresh = true;
+		if ($.tree.refresh) {
+			// Refresh document tree
+			loadTree();
+			$.tree.refresh = false;
+		}
+		listDocuments();
+	}
+	
+	/* */
+	function prepareEditForm(document) {
+	
+		$('#form-edit-document').css('display', "block");
+		$('#document-edit-id').attr('value', document.id);
+		$('#document-edit-subject').attr('value', document.subject);
+		// Set target text with the content of the only version
+		$('#document-edit-content').attr('value', document.versions[0]
+											? document.versions[0].content
+											: "");
+		
+		$('#submit-edit-document').unbind();
+		$('#submit-edit-document').click(function() {
+		
+			var documentId = $('#document-edit-id').attr('value');
+			var subject = $('#document-edit-subject').attr('value');
+			var content = $('#document-edit-content').attr('value');
+			$.getJSON('/ajaxEditDocument',
+					{ "documentId": documentId,
+					  "newTitle": subject,
+					  "newContent": content },
+					doneEditDocument);
+		});
+		
+		$('#cancel-edit-document').unbind();
+		$('#cancel-edit-document').click(function() {
+		
+			$('#document-edit-id').attr('value', "");
+			$('#document-edit-subject').attr('value', "");
+			$('#document-edit-content').attr('value', "");
+			$('#form-edit-document').css('display', "none");
+			// Clear submit click event listener
+			$('#submit-edit-document').unbind();
+		});
+	}
+	
+	/* */
+	function cancelEditDocument() {
+		
+		$('#document-edit-id').attr('value', "");
+		$('#document-edit-subject').attr('value', "");
+		$('#document-edit-content').attr('value', "");
+		$('#form-edit-document').css('display', "none");
+	}
+	
+	/* */
+	function doneEditDocument() {
+	
+		$('#cancel-edit-document').click();
+		// Click events stacks, clear click event listener on submit button
+		$('#submit-edit-document').unbind();
+		$.tree.refresh = true;
+		if ($.tree.refresh) {
+			// Refresh document tree
+			loadTree();
+			$.tree.refresh = false;
+		}
+		listDocuments();
+	}
+	
+	/* */
+	function doneDeleteDocument() {
+		
+		// Request for tree refresh
+		$.tree.refresh = true;
+		if ($.tree.refresh) {
+			// Refresh document tree
+			loadTree();
+			$.tree.refresh = false;
+		}
+		$.tree.node_selected = 0;
+		listDocuments();
+	}
+	
+	/* */
+	function doneDeleteVersion() {
+		
+		listDocuments();
+	}
+	
+	/* */
+	function prepareCommentForm(document) {
+	
+		$('#create-comment').css('display', "block");
+		$('#comment-version-id').attr('value', $(this).attr('versionId'));
+		
+		$('#submit-comment').unbind();
+		$('#submit-comment').click(function() {
+			var versionId = $('#comment-version-id').attr('value');
+			var subject = $('#comment-subject').attr('value');
+			var content = $('#comment-content').attr('value');
+			$.getJSON('/ajaxComment',
+					{ "versionId": versionId,
+					  "subject": subject,
+					  "content": content },
+					doneComment);
+		});
+		
+		$('#clear-comment').unbind();
+		$('#clear-comment').click(function() {
+			$('#comment-version-id').attr('value', "");
+			$('#comment-subject').attr('value', "");
+			$('#comment-content').attr('value', "");
+		});
+		
+		$('#cancel-comment').unbind();
+		$('#cancel-comment').click(function() {
+			cancelComment();
+		});
+	}
+	
+	/* */
+	function cancelComment() {
+	
+		$('#clear-comment').click();
+		$('#create-comment').css('display', "none");
+	}
+	
+	/* */
+	function doneComment() {
+	
+		$('#cancel-comment').click();
+		// Click events stacks, clear click event listener on submit button
+		$('#submit-comment').unbind();
+		
+		listDocuments();
 	}
 	
 	/* */
 	function listDocuments() {
 	
-		$.getJSON('/ajaxListDocuments',
+		if ($.tree.node_selected==0) {
+			/*$.getJSON('/ajaxAllDocuments',
 				null,
 				parseDocuments,
-				'json');
+				'json');*/
+			$('#document-body').html("<h2>Welcome to moofwd</h2>");
+		}
+		else {
+			$.getJSON('/ajaxRequestDocuments',
+					{ documentIds: [$.tree.node_selected] },
+					parseDocuments,
+					'json');
+		}
 	}
 	
 	/* */
@@ -320,6 +413,7 @@
 	function buildTree(treeData) {
 		
 		$(function () {
+			
 			$('#create-new-node').unbind();
 			$('#create-new-node').click(function() {
 				/*$('#document-tree').jstree("create",
@@ -330,36 +424,27 @@
 								// Node creation call back function
 							},
 							true);*/
-				if ($.tree.node_selected) {
-				
-					var subject = $('#document-subject').val();
-					var content = $('#document-content').val();
-					var parentId = $.tree.node_selected.attr("id");
-					
-					// Send document data using jQuery Ajax document() method
-					$.getJSON('/ajaxCreateDocument',
-							{ "subject": subject,
-							  "content": content,
-							  "parentId": parentId
-							},
-							parseDocuments,
-							'json');
-							
-					clearDocumentForm();
-				}
+				prepareCreateForm();
 			});
+			
 			$('#remove-node').unbind();
 			$('#remove-node').click(function() {
 				$('#document-tree').jstree("remove");
 			});
+			
 			$('#document-tree').jstree({
 				"json_data": { "data": treeData },
-				"plugins": [ "themes", "json_data", "ui"]
+				"plugins": [ "themes", "json_data", "ui"],
+				"initially_select": [0]
 			})
 			.bind("select_node.jstree", function(event, data) {
 				// When a node is clicked, set a buffer value to tree element
-				$.tree.node_selected = data.rslt.obj;
-				
+				$.tree.node_selected = data.rslt.obj.attr('id');
+				$('#document-parent-id').val($.tree.node_selected);
+				// Hide create document form
+				cancelEditDocument();
+				cancelComment();
+				listDocuments();
 			})
 			.delegate("a", "click", function(event, data) {
 				event.preventDefault();
@@ -370,18 +455,22 @@
 	/* DOM objects loaded event handler */
 	$(document).ready(function() {
 		
-		// Populate all documents on the front page
-		listDocuments();
-		// Set click event handler on submit-document button
-		$('#clear-document').click(clearDocumentForm);
-		$('#submit-document').click(createDocument);
+		// Reload document tree node structure
+		loadTree();
 		
 		// Initialization
 		$.tree = new Object();
-		$.tree.node_selected = null;
+		$.tree.node_selected = 0;
+		$.tree.refresh = false;
+		
+		// Populate all documents on the front page
+		listDocuments();
 		
 		// jquery Layout
-		$('body').layout({ applyDefaultStyles: true });
+		$('body').layout(
+			{ applyDefaultStyles: true,
+			  resizable: false
+		});
 	});
 	
 </script>
@@ -390,12 +479,12 @@
 
 <!-- Left column contains document tree structure -->
 <div class="ui-layout-west">
-	<h2>Document tree:</h2>
+	<h2>Document tree</h2>
 	<div id="document-tree"></div>
 	<div>
 		<h4>
-			<span id="create-new-node" class="alink">Create</span>
-			<span id="remove-node" class="alink">Remove</span>
+			<span id="create-new-node" class="alink">Create child document</span>
+			<span id="remove-node" class="alink" style="display:none;">Remove</span>
 		</h4>
 	</div>
 </div>
@@ -403,6 +492,33 @@
 <!-- Right column contains document body -->
 <div class="ui-layout-center">
 
+	<!-- Document content -->
+	<div id="document-body" style="display:block;"></div>
+	
+	<!-- Create document form -->
+	<div id="create-document" style="display:none;">
+		<h2>Create new document:</h2>
+		<p>
+			<span>Subject:</span>
+			<input id="document-subject" type="text"></input>
+		</p>
+		<p>
+			<span>Content:</span>
+			<textarea id="document-content" rows="10" cols="40"></textarea>
+		</p>
+		<p>
+			<span>Parent Document Id:</span>
+			<input id="document-parent-id" type="text" value="0" readonly></input>
+		</p>
+		<h3>
+			<span id="submit-document" class="alink">Submit</span>
+			or
+			<span id="clear-document" class="alink">Clear</span>
+			or
+			<span id="cancel-document" class="alink">Cancel</span>
+		</h3>
+	</div>
+	
 	<!-- Edit document form -->
 	<div id="form-edit-document" style="display:none;">
 		<h3>Edit document:</h3>
@@ -417,10 +533,11 @@
 			<span>Content:</span>
 			<textarea id="document-edit-content" rows="10" cols="60"></textarea>
 		</p>
-		<p>
-			<input type="submit" id="submit-edit-document" value="Submit"></input>
-			<input type="button" id="cancel-edit-document" value="Cancel"></input>
-		</p>
+		<h4>
+			<span id="submit-edit-document" class="alink">Submit</span>
+			or
+			<span id="cancel-edit-document" class="alink">Cancel</span>
+		</h4>
 	</div>
 
 	<!-- Create comment form -->
@@ -437,38 +554,13 @@
 			<span>Content:</span>
 			<textarea id="comment-content" rows="10" cols="60"></textarea>
 		</p>
-		<p>
-			<input id="submit-comment" type="button" value="Submit"></input>
-			<input id="clear-comment" type="button" value="Clear"></input>
-			<input id="cancel-comment" type="button" value="Cancel"></input>
-		</p>
-	</div>
-
-	<!-- All documents -->
-	<h2>All documents:</h2>
-	<div id="document-body"></div>
-
-	<hr/>
-	<h2>Create a new document:</h2>
-
-	<!-- Create document form -->
-	<div id="createDocument">
-		<p>
-			<span>Subject:</span>
-			<input id="document-subject" type="text"></input>
-		</p>
-		<p>
-			<span>Content:</span>
-			<textarea id="document-content" rows="10" cols="60"></textarea>
-		</p>
-		<p>
-			<span>Parent Id:</span>
-			<input id="document-parent-id" type="text" value="0" readonly></input>
-		</p>
-		<p>
-			<input id="submit-document" type="button" value="Submit"></input>
-			<input id="clearDocument" type="button" value="Clear"></input>
-		</p>
+		<h4>
+			<span id="submit-comment" class="alink">Submit</span>
+			or
+			<span id="clear-comment" class="alink">Clear</span>
+			or
+			<span id="cancel-comment" class="alink">Cancel</span>
+		</h4>
 	</div>
 
 	<!-- Templates -->
@@ -509,5 +601,6 @@
 			<span id="comment-body"></span>
 		</p>
 	</div>
+	
 <!-- End of ui center layout -->
 </div>

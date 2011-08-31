@@ -36,14 +36,14 @@ public class Serializer
 		return serializer;
 	}
 	
-	/* Get serializable documents */
+	/* Get all serializable documents */
 	public List<DocumentJSON> getAllDocuments()
 	{
 		Config config = Config.getInstance();
 		// Find documents using JPQL query
 		List<Document> documents = Document.find(
 		"select p from Document p join p.author u where p.author.id=u.id and u.id=?",
-									config.getUserId()).fetch();
+												config.getUserId()).fetch();
 		List<DocumentJSON> documentJSONs = new ArrayList<DocumentJSON>();
 		
 		int i = 0, j = 0, k = 0;
@@ -51,7 +51,9 @@ public class Serializer
 		for (i=0; i<documents.size(); i++)
 		{
 			Document document = documents.get(i);
-			DocumentJSON documentJSON = new DocumentJSON(document.id, document.subject, document.subject);
+			DocumentJSON documentJSON = new DocumentJSON(document.id,
+														 document.subject,
+														 document.subject);
 			
 			// Add all versions
 			for (j=0; j<document.versions.size(); j++)
@@ -77,13 +79,46 @@ public class Serializer
 		return documentJSONs;
 	}
 	
-	/* Create serializable document with only the last version */
+	/* Create serializable document */
 	public DocumentJSON getDocument(Long id)
+	{
+		Document document = Document.findById(id);
+		// Create a document serializable object
+		DocumentJSON documentJSON = new DocumentJSON(document.id,
+													 document.subject,
+													 document.subject);
+		int j = 0, k = 0;
+		// Add all versions
+		for (j=0; j<document.versions.size(); j++)
+		{
+			Version version = document.versions.get(j);
+			VersionJSON versionJSON = new VersionJSON(version.id,
+													  version.content,
+													  version.getTimef());
+			// Add all comments to the version
+			for (k=0; k<version.comments.size(); k++)
+			{
+				Comment comment = version.comments.get(k);
+				CommentJSON commentJSON = new CommentJSON(comment.id,
+														  comment.subject,
+														  comment.content,
+														  comment.getTimef());
+				versionJSON.addComment(commentJSON);
+			}
+			documentJSON.addVersion(versionJSON);
+		}
+		return documentJSON;
+	}
+	
+	/* Create serializable document with only the last version */
+	public DocumentJSON getDocumentLastVersion(Long id)
 	{
 		Document document = Document.findById(id);
 		Version lastVersion = document.getLastVersion();
 		// Create a document serializable object
-		DocumentJSON documentJSON = new DocumentJSON(document.id, document.subject, document.subject);
+		DocumentJSON documentJSON = new DocumentJSON(document.id,
+													 document.subject,
+													 document.subject);
 		// Create a version serializable
 		if (lastVersion!=null)
 		{
@@ -106,6 +141,18 @@ public class Serializer
 		return documentJSON;
 	}
 	
+	/* Get all serializable documents */
+	public List<DocumentJSON> getDocuments(Long[] documentIds)
+	{
+		List<DocumentJSON> documentJSONs = new ArrayList<DocumentJSON>();
+		int i = 0;
+		for (i=0; i<documentIds.length; i++)
+		{
+			documentJSONs.add(this.getDocument(documentIds[i]));
+		}
+		return documentJSONs;
+	}
+	
 	/* */
 	public void buildNode(Long parentDocumentId, DocumentJSON parentNode)
 	{
@@ -123,7 +170,8 @@ public class Serializer
 		for (i=0; i<documents.size(); i++)
 		{
 			Document childDocument = documents.get(i);
-			DocumentJSON childNode = new DocumentJSON(childDocument.id, childDocument.subject);
+			DocumentJSON childNode = new DocumentJSON(childDocument.id,
+													  childDocument.subject);
 			parentNode.addChild(childNode);
 			buildNode(childDocument.id, childNode);
 		}

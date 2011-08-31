@@ -47,7 +47,6 @@ public class DocumentJSON extends EntityJSON
 	/* */
 	public void initialize()
 	{
-		this.state = "open";
 		this.attr = new AttributeJSON();
 		this.attr.addId(this.id);
 	}
@@ -69,6 +68,8 @@ public class DocumentJSON extends EntityJSON
 		if (this.children==null)
 		{
 			this.children = new ArrayList<DocumentJSON>();
+			// Lazy initialization on tree node state
+			this.state = "open";
 		}
 		this.children.add(node);
 		return this.children;
