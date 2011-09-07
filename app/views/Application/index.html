@@ -5,10 +5,6 @@
 
 <style type="text/css">
 	/* Clickable text */
-	body {
-		font-family: "Trebuchet MS", "sans-serif";
-		font-size: 13px;
-	}
 	.alink {
 		color: #0066dd;
 		cursor: pointer;
@@ -305,12 +301,14 @@
 		$('#cancel-edit-document').click();
 		// Click events stacks, clear click event listener on submit button
 		$('#submit-edit-document').unbind();
+		// Request for tree refresh
 		$.tree.refresh = true;
 		if ($.tree.refresh) {
 			// Refresh document tree
 			loadTree();
 			$.tree.refresh = false;
 		}
+		$.tree.node_selected = 0;
 		listDocuments();
 	}
 	
@@ -390,7 +388,7 @@
 				null,
 				parseDocuments,
 				'json');*/
-			$('#document-body').html("<h2>Welcome to moofwd</h2>");
+			$('#document-body').html("<h2>Welcome to moofwd documentation</h2>");
 		}
 		else {
 			$.getJSON('/ajaxRequestDocuments',

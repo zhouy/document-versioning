@@ -1,0 +1,12 @@
+#{if flash.error}
+<h1>${flash.error}</h1>
+#{/if}
+
+${greeting}
+ 
+<form action="@{AuthOpenID.authenticate()}" method="POST">
+    <label for="user">What's your OpenID: </label>
+    <input type="text" name="user" id="user" />
+    <input type="submit" value="Login" />
+</form>
+</code>

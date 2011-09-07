@@ -21,3 +21,6 @@ Using MySQL 5:
 		mysql> alter table Document add constraint fk_document_user foreign key (author_id) references user(id);
 		mysql> alter table Version add constraint fk_version_document foreign key (document_id) references document(id);
 		mysql> alter table Comment add constraint fk_comment_version foreign key (version_id) references version(id);
+
+Google App Engine support:
+---------

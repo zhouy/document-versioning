@@ -3,7 +3,7 @@
 //  playDoumentVersioning
 //
 //  Created by Zhou Yang on 8/19/11.
-//  Copyright 2011 yangzhou1030@gmail.com. All rights reserved.
+//  Copyright 2011 Moofwd Inc All rights reserved.
 //
 
 import play.*;

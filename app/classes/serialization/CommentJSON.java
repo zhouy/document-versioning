@@ -3,7 +3,7 @@
 //  playDoumentVersioning
 //
 //  Created by Zhou Yang on 8/16/11.
-//  Copyright 2011 zhouy@moofwd.com All rights reserved.
+//  Copyright 2011 Moofwd Inc All rights reserved.
 //
 
 package classes.serialization;

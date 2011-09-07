@@ -8,8 +8,9 @@ import javax.persistence.Query;
 import play.db.jpa.JPA;
 import classes.*;
 import classes.serialization.*;
+import play.libs.OpenID;
+import play.libs.OpenID.*;
 
-@With(Secure.class)
 public class Application extends Controller
 {
 	/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -17,20 +18,27 @@ public class Application extends Controller
 	
 	/* */
 	@Before
-    static void setUser()
+    static void checkConnected()
 	{
-        if(Security.isConnected())
+        if (Authentication.getUser()==null)
 		{
-			Config config = Config.getInstance();
-            renderArgs.put("user", config.getUserEmail());
+            Authentication.login("Application.index");
+        }
+		else
+		{
+            renderArgs.put("user.email", Authentication.getEmail());
         }
     }
 	
 	/* */
     public static void index()
 	{
-		List<Document> documents = Document.all().fetch();
-		render(documents);
+		if(Authentication.isLoggedIn())
+		{
+			System.out.println("* User successfully logged in");
+			List<Document> documents = Document.all().fetch();
+			render(documents);
+        }
     }
 
 	/*
@@ -122,4 +130,17 @@ public class Application extends Controller
 		Application.index();
 	}
 	
+	/* */
+    public static void login()
+	{
+		System.out.println("* User logged in");
+        Authentication.login("Application.index");
+    }
+	
+	/* */
+    public static void logout()
+	{
+		System.out.println("* User logged out");
+        Authentication.logout("Application.index");
+    }
 }

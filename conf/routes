@@ -17,6 +17,14 @@ GET		/ajaxDeleteVersion						Versions.ajaxDeleteVersion
 GET		/ajaxComment							Comments.ajaxComment
 GET		/ajaxDeleteComment						Comments.ajaxDeleteComment
 
+#
+GET		/testing								Application.testing
+GET		/login									Application.login
+GET		/logout									Application.logout
+#GET	/login									AuthOpenID.login
+#GET	/logout									AuthOpenID.logout
+#*		/authenticate							AuthOpenID.authenticate
+
 # Build a post documentation tree
 GET		/ajaxBuildTree							Documents.ajaxBuildTree
 
@@ -33,4 +41,4 @@ GET     /public/                                staticDir:public
 *       /{controller}/{action}                  {controller}.{action}
 
 # Import Secure routes
-*       /                                       module:secure
+#*       /                                       module:secure
