@@ -41,9 +41,7 @@ public class Serializer
 	{
 		Config config = Config.getInstance();
 		// Find documents using JPQL query
-		List<Document> documents = Document.find(
-		"select p from Document p join p.author u where p.author.id=u.id and u.id=?",
-												config.getUserId()).fetch();
+		List<Document> documents = Document.all().fetch();
 		List<DocumentJSON> documentJSONs = new ArrayList<DocumentJSON>();
 		
 		int i = 0, j = 0, k = 0;
@@ -59,9 +57,12 @@ public class Serializer
 			for (j=0; j<document.versions.size(); j++)
 			{
 				Version version = document.versions.get(j);
+				List<User> authors = User.find("select u from User u where u.id=?",
+											   version.author.id).fetch();
 				VersionJSON versionJSON = new VersionJSON(version.id,
 														  version.content,
-														  version.getTimef());
+														  version.getTimef(),
+														  authors.get(0).userEmail);
 				// Add all comments to the version
 				for (k=0; k<version.comments.size(); k++)
 				{
@@ -92,9 +93,13 @@ public class Serializer
 		for (j=0; j<document.versions.size(); j++)
 		{
 			Version version = document.versions.get(j);
+			// Retrieve the user
+			List<User> authors = User.find("select u from User u where u.id=?",
+										   version.author.id).fetch();
 			VersionJSON versionJSON = new VersionJSON(version.id,
 													  version.content,
-													  version.getTimef());
+													  version.getTimef(),
+													  authors.get(0).userEmail);
 			// Add all comments to the version
 			for (k=0; k<version.comments.size(); k++)
 			{
@@ -122,9 +127,12 @@ public class Serializer
 		// Create a version serializable
 		if (lastVersion!=null)
 		{
+			List<User> authors = User.find("select u from User u where u.id=?",
+										   lastVersion.author.id).fetch();
 			VersionJSON versionJSON = new VersionJSON(lastVersion.id,
 													  lastVersion.content,
-													  lastVersion.getTimef());
+													  lastVersion.getTimef(),
+													  authors.get(0).userEmail);
 			Integer i = 0;
 			// Add all comments to the version
 			for (i=0; i<lastVersion.comments.size(); i++)

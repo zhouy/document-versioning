@@ -18,12 +18,12 @@ GET		/ajaxComment							Comments.ajaxComment
 GET		/ajaxDeleteComment						Comments.ajaxDeleteComment
 
 #
-GET		/testing								Application.testing
 GET		/login									Application.login
 GET		/logout									Application.logout
 #GET	/login									AuthOpenID.login
 #GET	/logout									AuthOpenID.logout
 #*		/authenticate							AuthOpenID.authenticate
+GET		/testing								Application.testing
 
 # Build a post documentation tree
 GET		/ajaxBuildTree							Documents.ajaxBuildTree

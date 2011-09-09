@@ -14,6 +14,7 @@ public class VersionJSON extends EntityJSON
 {	
 	public String content;
 	public String date;
+	public String author;
 	public List<CommentJSON> comments; 
 	
 	/* */
@@ -22,11 +23,12 @@ public class VersionJSON extends EntityJSON
 	}
 	
 	/* */
-	public VersionJSON(Long id_, String content_, String date_)
+	public VersionJSON(Long id_, String content_, String date_, String author_)
 	{
 		this.id = id_;
 		this.content = content_;
 		this.date = date_;
+		this.author = author_;
 	}
 	
 	/* */

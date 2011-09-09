@@ -27,14 +27,14 @@ public class User extends Model
 	public String password;
 	
 	@OneToMany(mappedBy="author", cascade=CascadeType.ALL)
-	public List<Document> documents;
+	public List<Version> versions;
 	
 	/* Constructor with minmum requirements */
 	public User(String userEmail_, String password_)
 	{
 		this.userEmail = userEmail_;
 		this.password = password_;
-		this.documents = new ArrayList<Document>();
+		this.versions = new ArrayList<Version>();
 	}
 	
 	/* Constructor with all data members */
@@ -47,6 +47,6 @@ public class User extends Model
 		this.firstName = firstName_;
 		this.lastName = lastName_;
 		this.password = password_;
-		this.documents = new ArrayList<Document>();
+		this.versions = new ArrayList<Version>();
 	}
 }

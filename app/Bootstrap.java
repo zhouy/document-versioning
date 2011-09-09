@@ -19,7 +19,7 @@ public class Bootstrap extends Job {
 	{
 		// This is a temporary solution to user data
         // If no user added to database, then add one user
-        if(User.count() == 0)
+        if (User.count()==0)
 		{
 			Config config = Config.getInstance();
 			User user = new User(config.getUserEmail(),

@@ -53,15 +53,18 @@ public class Documents extends CRUD
 		 * Create permalink of that version
 		 */
 		
-		Config config = Config.getInstance();
-		User currentUser = User.findById(config.getUserId());
+		// By creating a document, I assume that the document is created by the
+		// program, and versions in the document are created by users
 		// Create a new document for current user, current user is defined in Config
-		Document document = new Document(currentUser, subject, parentId).save();
+		Document document = new Document(subject, parentId).save();
 		System.out.println("* A new document is successfully created.");
-		Version aversion = new Version(document, content).save();
-		System.out.println("* A new version is successfully created.");
-		document.addVersion(aversion);
 		
+		Config config = Config.getInstance();
+		User currentUser = User.findById(config.getSingedInUserId());
+		Version aversion = new Version(currentUser, document, content).save();
+		System.out.println("* A new version is successfully created.");
+		
+		document.addVersion(aversion);
 		Documents.ajaxAllDocuments();
 	}
 	
@@ -79,8 +82,12 @@ public class Documents extends CRUD
 	{
 		Document document = Document.findById(documentId);
 		document.changeSubject(newTitle);
-		Version newVersion = new Version(document, newContent).save();
+		
+		Config config = Config.getInstance();
+		User currentUser = User.findById(config.getSingedInUserId());
+		Version newVersion = new Version(currentUser, document, newContent).save();
 		System.out.println("* A new version is successfully created.");
+		
 		document.addVersion(newVersion);
 		document.save();
 	}

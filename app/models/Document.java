@@ -24,19 +24,14 @@ public class Document extends Model
 	@Required
 	public String subject;
 	
-	@Required
-	@ManyToOne
-	public User author;
-	
 	public Long parentId;
 	
 	@OneToMany(mappedBy="document", cascade=CascadeType.ALL)
 	public List<Version> versions;
 	
 	/* Constructor with minmum requirements */
-	public Document(User author_, String subject_, Long parentId_)
+	public Document(String subject_, Long parentId_)
 	{
-		this.author = author_;
 		this.subject = subject_;
 		this.parentId = parentId_;
 	}

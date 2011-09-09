@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
     <head>
 		<title>#{get 'title' /}</title>
@@ -10,16 +9,13 @@
 		<script src="@{'/public/javascripts/jquery-1.5.2.min.js'}" type="text/javascript"
 				charset="${_response_encoding}"></script>
 		#{get 'moreScripts' /}
-		
 		<!-- jsTree javascript -->
 		<script type="text/javascript" src="@{'/public/javascripts/jquery.cookie.js'}"></script>
-		<script type="text/javascript" src="@{'/public/javascripts/jquery.hotkeys.js'}"></script>
+		<!--<script type="text/javascript" src="@{'/public/javascripts/jquery.hotkeys.js'}"></script>-->
 		<script type="text/javascript" src="@{'/public/javascripts/jquery.jstree.js'}"></script>
-		
 		<!-- jquery layout javascript support -->
 		<script type="text/javascript" src="@{'/public/javascripts/jquery.layout.js'}"></script>
 		<script type="text/javascript" src="@{'/public/javascripts/jquery.ui.js'}"></script>
-		
 		<!-- Common styles -->
 		<style type="text/css">
 			body {
@@ -28,7 +24,7 @@
 			}
 		</style>
 	</head>
-	<body class="claro" >
-        #{doLayout /}
+	<body>
+		#{doLayout /}
 	</body>
 </html>

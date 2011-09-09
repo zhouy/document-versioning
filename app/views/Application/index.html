@@ -34,13 +34,11 @@
 
 	/* Parse documents JSON data */
 	function parseDocuments(documents) {
-	
 		var target = $('#document-body');
 		target.html("<div></div>"); 
 		
 		// Populate all document in returned JSON data object
 		for (var p in documents) {
-		
 			var versionHtml = $("<div></div>");
 			// Add document title
 			target.append(
@@ -72,7 +70,6 @@
 			var versions = documents[p].versions;
 			// Populate all versions of the document
 			for (var v in versions) {
-			
 				var commentHtml = $("<div></div>");
 				// Add version content
 				versionHtml.append(
@@ -87,6 +84,10 @@
 											+ (parseInt(v) + 1)
 											+ " - "
 											+ versions[v].date)
+									.end()
+								// Version author
+								.find('#version-author')
+									.prepend("by [" + versions[v].author + "]")
 									.end()
 								// Make comment on version
 								.find('#version-comment')
@@ -113,7 +114,6 @@
 				var comments = versions[v].comments;
 				// Add comments to the version
 				for (var c in comments) {
-				
 					commentHtml.append(
 									$('#comment-template')
 										.clone()
@@ -142,7 +142,6 @@
 				
 					// Add delete comment click event handler
 					$('#d_v' + v + 'c' + c).click(function() {
-					
 						$.getJSON('/ajaxDeleteComment',
 								{ "versionId": $(this).attr('versionId'),
 								  "commentId": $(this).attr('commentId') },
@@ -155,7 +154,6 @@
 				
 				// Add delete version click event handler
 				$('#d_p' + p + 'v' + v).click(function() {
-				
 					$.getJSON('/ajaxDeleteVersion',
 							{ "documentId": parseInt($(this).attr('documentId')),
 							  "versionId": parseInt($(this).attr('versionId')) },
@@ -165,15 +163,12 @@
 			
 			// Add edit document click event handler
 			$('#e_p' + p).click(function() {
-			
 				$.getJSON('/ajaxFormEdit',
 						{ "documentId": parseInt($(this).attr('documentId')) },
 						prepareEditForm);
 			});
-			
 			// Add delete document click event handler
 			$('#d_p' + p).click(function() {
-			
 				$.getJSON('/ajaxDeleteDocument',
 						{ "documentId": parseInt($(this).attr('documentId')) },
 						doneDeleteDocument);
@@ -183,19 +178,16 @@
 	
 	/* */
 	function prepareCreateForm() {
-	
 		$('#create-document').css('display', "block");
 		$('#document-body').css('display', "none");
 		$('#submit-document').unbind();
 		$('#submit-document').click(function() {
 			createDocument();
 		});
-		
 		$('#clear-document').unbind();
 		$('#clear-document').click(function() {
 			clearDocumentForm();
 		});
-		
 		$('#cancel-document').unbind();
 		$('#cancel-document').click(function() {
 			cancelDocumentForm();
@@ -204,14 +196,12 @@
 	
 	/* */
 	function clearDocumentForm() {
-	
 		 $('#document-subject').attr('value', "");
 		 $('#document-content').attr('value', "");
 	}
 	
 	/* */
 	function cancelDocumentForm() {
-	
 		clearDocumentForm();
 		$('#create-document').css('display', "none");
 		$('#document-body').css('display', "block");
@@ -219,11 +209,9 @@
 	
 	/* Submit your document data */
 	function createDocument() {
-	
 		var subject = $('#document-subject').val();
 		var content = $('#document-content').val();
 		var parentId = $('#document-parent-id').val();
-		
 		// Send document data using jQuery Ajax document() method
 		$.getJSON('/ajaxCreateDocument',
 				{ "subject": subject,
@@ -235,8 +223,7 @@
 	}
 	
 	/* Done creating new document */
-	function doneCreateDocument()
-	{
+	function doneCreateDocument() {
 		clearDocumentForm();
 		$('#create-document').css('display', "none");
 		$('#document-body').css('display', "block");
@@ -252,7 +239,6 @@
 	
 	/* */
 	function prepareEditForm(document) {
-	
 		$('#form-edit-document').css('display', "block");
 		$('#document-edit-id').attr('value', document.id);
 		$('#document-edit-subject').attr('value', document.subject);
@@ -260,10 +246,8 @@
 		$('#document-edit-content').attr('value', document.versions[0]
 											? document.versions[0].content
 											: "");
-		
 		$('#submit-edit-document').unbind();
 		$('#submit-edit-document').click(function() {
-		
 			var documentId = $('#document-edit-id').attr('value');
 			var subject = $('#document-edit-subject').attr('value');
 			var content = $('#document-edit-content').attr('value');
@@ -276,7 +260,6 @@
 		
 		$('#cancel-edit-document').unbind();
 		$('#cancel-edit-document').click(function() {
-		
 			$('#document-edit-id').attr('value', "");
 			$('#document-edit-subject').attr('value', "");
 			$('#document-edit-content').attr('value', "");
@@ -288,7 +271,6 @@
 	
 	/* */
 	function cancelEditDocument() {
-		
 		$('#document-edit-id').attr('value', "");
 		$('#document-edit-subject').attr('value', "");
 		$('#document-edit-content').attr('value', "");
@@ -297,7 +279,6 @@
 	
 	/* */
 	function doneEditDocument() {
-	
 		$('#cancel-edit-document').click();
 		// Click events stacks, clear click event listener on submit button
 		$('#submit-edit-document').unbind();
@@ -314,7 +295,6 @@
 	
 	/* */
 	function doneDeleteDocument() {
-		
 		// Request for tree refresh
 		$.tree.refresh = true;
 		if ($.tree.refresh) {
@@ -328,7 +308,6 @@
 	
 	/* */
 	function doneDeleteVersion() {
-		
 		listDocuments();
 	}
 	
@@ -365,30 +344,26 @@
 	
 	/* */
 	function cancelComment() {
-	
 		$('#clear-comment').click();
 		$('#create-comment').css('display', "none");
 	}
 	
 	/* */
 	function doneComment() {
-	
 		$('#cancel-comment').click();
 		// Click events stacks, clear click event listener on submit button
 		$('#submit-comment').unbind();
-		
 		listDocuments();
 	}
 	
 	/* */
 	function listDocuments() {
-	
 		if ($.tree.node_selected==0) {
 			/*$.getJSON('/ajaxAllDocuments',
 				null,
 				parseDocuments,
 				'json');*/
-			$('#document-body').html("<h2>Welcome to moofwd documentation</h2>");
+			$('#document-body').html("<h2>Welcome to moofwd: ${userEmail}</h2>");
 		}
 		else {
 			$.getJSON('/ajaxRequestDocuments',
@@ -400,7 +375,6 @@
 	
 	/* */
 	function loadTree() {
-	
 		$.getJSON('/ajaxBuildTree',
 				null,
 				buildTree,
@@ -409,9 +383,7 @@
 	
 	/* */
 	function buildTree(treeData) {
-		
 		$(function () {
-			
 			$('#create-new-node').unbind();
 			$('#create-new-node').click(function() {
 				/*$('#document-tree').jstree("create",
@@ -424,16 +396,14 @@
 							true);*/
 				prepareCreateForm();
 			});
-			
 			$('#remove-node').unbind();
 			$('#remove-node').click(function() {
 				$('#document-tree').jstree("remove");
 			});
-			
 			$('#document-tree').jstree({
 				"json_data": { "data": treeData },
 				"plugins": [ "themes", "json_data", "ui"],
-				"initially_select": [0]
+				"initially_select": []
 			})
 			.bind("select_node.jstree", function(event, data) {
 				// When a node is clicked, set a buffer value to tree element
@@ -452,22 +422,21 @@
 	
 	/* DOM objects loaded event handler */
 	$(document).ready(function() {
-		
 		// Reload document tree node structure
 		loadTree();
-		
 		// Initialization
 		$.tree = new Object();
 		$.tree.node_selected = 0;
 		$.tree.refresh = false;
-		
 		// Populate all documents on the front page
 		listDocuments();
-		
 		// jquery Layout
 		$('body').layout(
 			{ applyDefaultStyles: true,
 			  resizable: false
+		});
+		$('#testing').click(function() {
+			
 		});
 	});
 	
@@ -482,7 +451,7 @@
 	<div>
 		<h4>
 			<span id="create-new-node" class="alink">Create child document</span>
-			<span id="remove-node" class="alink" style="display:none;">Remove</span>
+			<span id="testing" class="alink">Testing</span>
 		</h4>
 	</div>
 </div>
@@ -533,7 +502,6 @@
 		</p>
 		<h4>
 			<span id="submit-edit-document" class="alink">Submit</span>
-			or
 			<span id="cancel-edit-document" class="alink">Cancel</span>
 		</h4>
 	</div>
@@ -554,9 +522,7 @@
 		</p>
 		<h4>
 			<span id="submit-comment" class="alink">Submit</span>
-			or
 			<span id="clear-comment" class="alink">Clear</span>
-			or
 			<span id="cancel-comment" class="alink">Cancel</span>
 		</h4>
 	</div>
@@ -579,6 +545,7 @@
 	<div id="version-template" style="display:none;">
 		<h4>
 			<span id="version-date"></span>
+			<span id="version-author"></span>
 			<span id="version-comment">Comment</span>
 			<span id="version-delete">Delete</span>
 		</h4>

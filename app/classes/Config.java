@@ -14,9 +14,12 @@ public class Config
 {
 	private static Config config;
 	
+	private Long signedInUserId;
+	
 	/* Hide constructor */
 	private Config()
 	{
+		signedInUserId = 1L;
 	}
 	
 	/* Singleton class implementation */
@@ -29,10 +32,22 @@ public class Config
 		return config;
 	}
 	
+	/* */
+	public Long getSingedInUserId()
+	{
+		return this.signedInUserId;
+	}
+	
+	/* */
+	public void setSingedInUserId(Long signedInUserId_)
+	{
+		this.signedInUserId = signedInUserId_;
+	}
+	
 	/* Temporary UserId, Username and Password */
 	public String getUserEmail()
 	{
-		return "admin";
+		return "admin@moofwd.com";
 	}
 	
 	public String getUserPassword()

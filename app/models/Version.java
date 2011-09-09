@@ -17,7 +17,11 @@ import java.text.*;
 
 @Entity
 public class Version extends Model
-{	
+{
+	@Required
+	@ManyToOne
+	public User author;
+	
 	@Required
 	@Lob
 	public String content;
@@ -36,8 +40,9 @@ public class Version extends Model
 	{		
 	}
 	
-	public Version(Document document_, String content_)
+	public Version(User author_, Document document_, String content_)
 	{
+		this.author = author_;
 		this.document = document_;
 		this.content = content_;
 		this.date = new Date();

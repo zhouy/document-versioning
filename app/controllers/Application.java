@@ -3,13 +3,13 @@ package controllers;
 import play.*;
 import play.mvc.*;
 import java.util.*;
-import models.*;
-import javax.persistence.Query;
 import play.db.jpa.JPA;
+import models.*;
 import classes.*;
 import classes.serialization.*;
-import play.libs.OpenID;
-import play.libs.OpenID.*;
+import javax.persistence.Query;
+/*import play.libs.OpenID;
+import play.libs.OpenID.*;*/
 
 public class Application extends Controller
 {
@@ -22,11 +22,20 @@ public class Application extends Controller
 	{
         if (Authentication.getUser()==null)
 		{
+			// First check if user database table is empty
+			if (User.count()==0)
+			{
+				Config config = Config.getInstance();
+				// Add a global admin account
+				User user = new User(config.getUserEmail(),
+									 config.getUserPassword());
+				user.save();
+			}
             Authentication.login("Application.index");
         }
 		else
 		{
-            renderArgs.put("user.email", Authentication.getEmail());
+            renderArgs.put("user", Authentication.getEmail());
         }
     }
 	
@@ -35,10 +44,34 @@ public class Application extends Controller
 	{
 		if(Authentication.isLoggedIn())
 		{
-			System.out.println("* User successfully logged in");
+			// First check if current user in database, if not then add save
+			// user to database user table
+			List<User> usersOnFile = User.find(
+								"select u from User u where u.userEmail=?",
+								Authentication.getEmail()).fetch();
+			// Check if there an existing user matches logged in user
+			if (usersOnFile.size()==0)
+			{
+				User user = new User(Authentication.getEmail(),
+									 // Use empty password for dev stage
+									 "password");
+				user.save();
+			}
+			// Find logged in user in table
+			Config config = Config.getInstance();
+			usersOnFile = User.find(
+									"select u from User u where u.userEmail=?",
+									Authentication.getEmail()).fetch();
+			config.setSingedInUserId(usersOnFile.get(0).id);
+			
 			List<Document> documents = Document.all().fetch();
-			render(documents);
-        }
+			Object userEmail = renderArgs.get("user");
+			render(userEmail, documents);
+		}
+		else
+		{
+			Application.login();
+		}
     }
 
 	/*
@@ -55,10 +88,10 @@ public class Application extends Controller
 		 */
 		
 		Config config = Config.getInstance();
-		User currentUser = User.findById(config.getUserId());
+		User currentUser = User.findById(config.getSingedInUserId());
 		// Create a new document for current user, current user is defined in Config
-		Document document = new Document(currentUser, subject, parentId).save();
-		Version aversion = new Version(document, content).save();
+		Document document = new Document(subject, parentId).save();
+		Version aversion = new Version(currentUser, document, content).save();
 		document.addVersion(aversion);
 		
 		/* Redirect to index page */
@@ -80,8 +113,10 @@ public class Application extends Controller
 	 */
 	public static void edit(Long id, String subject, String content)
 	{
+		Config config = Config.getInstance();
+		User currentUser = User.findById(config.getSingedInUserId());
 		Document document = Document.findById(id);
-		Version newVersion = new Version(document, content).save();
+		Version newVersion = new Version(currentUser, document, content).save();
 		document.addVersion(newVersion);
 		document.save();
 		
@@ -143,4 +178,23 @@ public class Application extends Controller
 		System.out.println("* User logged out");
         Authentication.logout("Application.index");
     }
+	
+	/* */
+	/*public static void testing()
+	{
+		// Thread testing
+		Thread producer = new Thread(new Producer());
+		Thread consumer = new Thread(new Consumer());
+		producer.start();
+		consumer.start();
+		try
+		{
+		producer.join();
+		consumer.join();
+		}
+		catch (InterruptedException ex)
+		{
+		}
+		System.out.println("The value is " + Counter.value());
+	}*/
 }
